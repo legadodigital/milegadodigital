@@ -5,22 +5,6 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * Edita un mensaje p stumo existente.
- *
- * Recibe como props un objeto `mensaje` con los siguientes atributos:
- * - `titulo`: el t tulo del mensaje p stumo.
- * - `contenido`: el contenido del mensaje p stumo (texto).
- * - `tipo_mensaje`: el tipo de mensaje p stumo (texto, video o audio).
- * - `destinatario_email`: el email del destinatario del mensaje p stumo.
- * - `destinatario_nombre`: el nombre del destinatario del mensaje p stumo (opcional).
- * - `fecha_entrega`: la fecha de entrega del mensaje p stumo.
- * - `ruta_archivo`: la ruta del archivo asociado al mensaje p stumo (si existe).
- *
- * Devuelve un componente JSX que renderiza un formulario para editar el mensaje p stumo.
- */
-/*******  4e2119c4-d5ad-48bb-a172-9591e8fc9935  *******/
 export default function Edit({ auth, mensaje }) {
     const { data, setData, post, processing, errors } = useForm({
         titulo: mensaje.titulo,
@@ -33,17 +17,6 @@ export default function Edit({ auth, mensaje }) {
         _method: 'put',
     });
 
-/*************  ✨ Windsurf Command ⭐  *************/
-    /**
-     * Envia el formulario para editar el mensaje p stumo.
-     *
-     * Evita que se env e el formulario por defecto y hace una petici n HTTP PUT
-     * a la ruta `mensajes-postumos.update` con el id del mensaje p stumo que se
-     * est  editando.
-     *
-     * @param {Event} e - El evento de env o del formulario.
-     */
-/*******  30e613ee-53a7-4a84-89d6-ef77e0fa9b78  *******/
     const submit = (e) => {
         e.preventDefault();
         post(route('mensajes-postumos.update', mensaje.id));
