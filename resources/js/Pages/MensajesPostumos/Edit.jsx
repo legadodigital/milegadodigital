@@ -33,6 +33,17 @@ export default function Edit({ auth, mensaje }) {
         _method: 'put',
     });
 
+/*************  ✨ Windsurf Command ⭐  *************/
+    /**
+     * Envia el formulario para editar el mensaje p stumo.
+     *
+     * Evita que se env e el formulario por defecto y hace una petici n HTTP PUT
+     * a la ruta `mensajes-postumos.update` con el id del mensaje p stumo que se
+     * est  editando.
+     *
+     * @param {Event} e - El evento de env o del formulario.
+     */
+/*******  30e613ee-53a7-4a84-89d6-ef77e0fa9b78  *******/
     const submit = (e) => {
         e.preventDefault();
         post(route('mensajes-postumos.update', mensaje.id));
