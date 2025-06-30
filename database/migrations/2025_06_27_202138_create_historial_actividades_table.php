@@ -1,0 +1,34 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('historial_actividades', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('accion', 100);
+            $table->string('info_dispositivo')->nullable();
+            $table->ipAddress('direccion_ip')->nullable();
+            $table->string('ubicacion')->nullable();
+            $table->text('user_agent')->nullable();
+            $table->enum('estado', ['exitoso', 'fallido', 'advertencia'])->default('exitoso');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('historial_actividades');
+    }
+};
