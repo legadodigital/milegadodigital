@@ -23,6 +23,7 @@ export default function Welcome({ auth, plans }) {
                             <a href="#caracteristicas" className="hover:text-gray-300 transition duration-300">Características</a>
                             <a href="#quienes-somos" className="hover:text-gray-300 transition duration-300">Quienes Somos</a>
                             <a href="#precios" className="hover:text-gray-300 transition duration-300">Precios</a>
+                            <a href="#testimonios" className="hover:text-gray-300 transition duration-300">Testimonios</a>
                             <a href="#contactenos" className="hover:text-gray-300 transition duration-300">Contáctenos</a>
                         </nav>
                         <div className="hidden md:flex space-x-4">
