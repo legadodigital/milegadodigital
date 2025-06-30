@@ -14,13 +14,12 @@ export default function Edit({ auth, mensaje }) {
         destinatario_nombre: mensaje.destinatario_nombre || '',
         fecha_entrega: mensaje.fecha_entrega ? new Date(mensaje.fecha_entrega).toISOString().slice(0, 16) : '',
         archivo: null,
+        _method: 'put',
     });
 
     const submit = (e) => {
         e.preventDefault();
-        post(route('mensajes-postumos.update', mensaje.id), {
-            _method: 'put',
-        });
+        post(route('mensajes-postumos.update', mensaje.id));
     };
 
     return (
