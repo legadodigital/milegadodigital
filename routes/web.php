@@ -47,6 +47,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Rutas para actualizar el plan del usuario
+    Route::patch('/profile/plan', [ProfileController::class, 'updatePlan'])->name('profile.updatePlan');
+
     // Rutas para Configuración de Seguridad
     Route::get('/seguridad', [ProfileController::class, 'security'])->name('profile.security');
     Route::patch('/seguridad', [ProfileController::class, 'updateSecurity'])->name('profile.updateSecurity');
