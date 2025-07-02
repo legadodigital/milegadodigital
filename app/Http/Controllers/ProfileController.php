@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\ConfiguracionSeguridad;
+use App\Models\Plan;
 
 class ProfileController extends Controller
 {
@@ -19,10 +20,33 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        $user = $request->user();
+        $user->load('plan.features'); // Load user's current plan with its features
+
+        $plans = Plan::with('features')->get(); // Get all available plans with their features
+
         return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
+            'userPlan' => $user->plan, // Pass the user's current plan
+            'availablePlans' => $plans, // Pass all available plans
         ]);
+    }
+
+    /**
+     * Update the user's plan.
+     */
+    public function updatePlan(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'plan_id' => ['required', 'exists:plans,id'],
+        ]);
+
+        $user = $request->user();
+        $user->plan_id = $request->plan_id;
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'Plan actualizado exitosamente.');
     }
 
     /**
