@@ -29,10 +29,26 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'is_admin' => $user->is_admin,
+                    'plan' => $user->plan ? [
+                        'name' => $user->plan->name,
+                        'features' => $user->plan->features->pluck('value', 'feature_code'),
+                    ] : null,
+                    'resource_counts' => [
+                        'messages' => $user->mensajesPostumos()->count(),
+                        'documents' => $user->documentosImportantes()->count(),
+                        'trusted_contacts' => $user->contactosConfianza()->count(),
+                    ],
+                ] : null,
             ],
             'flash' => [
                 'success' => $request->session()->get('success'),

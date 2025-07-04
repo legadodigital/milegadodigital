@@ -1,8 +1,12 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 
 export default function Index({ auth, contactos }) {
     const { delete: destroy } = useForm();
+    const { props } = usePage();
+    const { plan, resource_counts } = props.auth.user;
+
+    const canAddContact = plan.features.max_trusted_contacts === '-1' || resource_counts.trusted_contacts < plan.features.max_trusted_contacts;
 
     const handleDelete = (id) => {
         if (confirm('¿Estás seguro de que quieres eliminar este contacto de confianza?')) {
@@ -24,11 +28,21 @@ export default function Index({ auth, contactos }) {
                             <div className="flex justify-end mb-4">
                                 <Link
                                     href={route('contactos-confianza.create')}
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    className={`bg-blue-500 text-white font-bold py-2 px-4 rounded ${
+                                        !canAddContact ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
+                                    }`}
+                                    disabled={!canAddContact}
                                 >
                                     Añadir Nuevo Contacto
                                 </Link>
                             </div>
+
+                            {!canAddContact && (
+                                <div className="mb-4 p-4 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-lg">
+                                    Has alcanzado el límite de contactos de confianza para tu plan actual ({plan.name}). Para añadir más, considera
+                                    actualizar tu plan.
+                                </div>
+                            )}
 
                             {contactos.length === 0 ? (
                                 <p>No tienes contactos de confianza añadidos.</p>

@@ -1,9 +1,13 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
 
 export default function Index({ auth, mensajes }) {
     const { delete: destroy } = useForm();
+    const { props } = usePage();
+    const { plan, resource_counts } = props.auth.user;
+
+    const canCreateMessage = plan.features.max_messages === '-1' || resource_counts.messages < plan.features.max_messages;
 
     const handleDelete = (id) => {
         if (confirm('¿Estás seguro de que quieres eliminar este mensaje póstumo?')) {
@@ -25,11 +29,21 @@ export default function Index({ auth, mensajes }) {
                             <div className="flex justify-end mb-4">
                                 <Link
                                     href={route('mensajes-postumos.create')}
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    className={`bg-blue-500 text-white font-bold py-2 px-4 rounded ${
+                                        !canCreateMessage ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
+                                    }`}
+                                    disabled={!canCreateMessage}
                                 >
                                     Crear Nuevo Mensaje
                                 </Link>
                             </div>
+
+                            {!canCreateMessage && (
+                                <div className="mb-4 p-4 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-lg">
+                                    Has alcanzado el límite de mensajes póstumos para tu plan actual ({plan.name}). Para crear más, considera
+                                    actualizar tu plan.
+                                </div>
+                            )}
 
                             {mensajes.length === 0 ? (
                                 <p>No tienes mensajes póstumos creados.</p>

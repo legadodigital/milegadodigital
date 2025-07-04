@@ -1,9 +1,14 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 
-export default function VideoRecorder({ auth, canRecordVideo, videoDurationLimit }) {
+export default function VideoRecorder({ auth }) {
+    const { props } = usePage();
+    const { plan } = props.auth.user;
+    const canRecordVideo = plan.features.video_recording === 'true';
+    const videoDurationLimit = parseInt(plan.features.video_duration, 10);
+
     const [isRecording, setIsRecording] = useState(false);
     const [videoURL, setVideoURL] = useState(null);
     const [remainingTime, setRemainingTime] = useState(videoDurationLimit);

@@ -35,16 +35,8 @@ class MensajePostumoController extends Controller
     {
         $user = auth()->user();
 
-        // Bypass plan limits if user is admin
-        if ($user->is_admin) {
-            // Admin can create unlimited messages
-        } else {
-            $plan = $user->plan->load('features');
-            $maxMessages = $plan->features->where('feature_code', 'max_messages')->first()->value ?? 0;
-
-            if ($maxMessages !== 'ilimitado' && $user->mensajesPostumos()->count() >= (int)$maxMessages) {
-                return redirect()->back()->withErrors(['limit' => 'Has alcanzado el límite de mensajes póstumos para tu plan.']);
-            }
+        if (!$user->is_admin && !$user->canCreateMessage()) {
+            return redirect()->back()->withErrors(['limit' => 'Has alcanzado el límite de mensajes póstumos para tu plan.']);
         }
 
         $validated = $request->validate([

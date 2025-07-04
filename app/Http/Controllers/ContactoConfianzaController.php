@@ -34,16 +34,8 @@ class ContactoConfianzaController extends Controller
     {
         $user = auth()->user();
 
-        // Bypass plan limits if user is admin
-        if ($user->is_admin) {
-            // Admin can create unlimited trusted contacts
-        } else {
-            $plan = $user->plan->load('features');
-            $maxTrustedContacts = $plan->features->where('feature_code', 'max_trusted_contacts')->first()->value ?? 0;
-
-            if ($maxTrustedContacts !== 'ilimitado' && $user->contactosConfianza()->count() >= (int)$maxTrustedContacts) {
-                return redirect()->back()->withErrors(['limit' => 'Has alcanzado el límite de contactos de confianza para tu plan.']);
-            }
+        if (!$user->is_admin && !$user->canAddTrustedContact()) {
+            return redirect()->back()->withErrors(['limit' => 'Has alcanzado el límite de contactos de confianza para tu plan.']);
         }
 
         $validated = $request->validate([

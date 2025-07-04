@@ -8,6 +8,13 @@ use App\Http\Controllers\RecuerdoController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Mail\TestMail;
+use Illuminate\Support\Facades\Mail;
+
+Route::get('/test-mail', function () {
+    Mail::to('calvarle@gmail.com')->send(new TestMail());
+    return 'Correo de prueba enviado.';
+});
 
 use App\Models\Plan;
 
