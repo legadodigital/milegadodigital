@@ -1,8 +1,12 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 
 export default function Index({ auth, documentos }) {
     const { delete: destroy } = useForm();
+    const { props } = usePage();
+    const { plan, resource_counts } = props.auth.user;
+
+    const canUploadDocument = plan.features.max_documents === '-1' || resource_counts.documents < plan.features.max_documents;
 
     const handleDelete = (id) => {
         if (confirm('¿Estás seguro de que quieres eliminar este documento?')) {
@@ -24,11 +28,21 @@ export default function Index({ auth, documentos }) {
                             <div className="flex justify-end mb-4">
                                 <Link
                                     href={route('documentos-importantes.create')}
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    className={`bg-blue-500 text-white font-bold py-2 px-4 rounded ${
+                                        !canUploadDocument ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
+                                    }`}
+                                    disabled={!canUploadDocument}
                                 >
                                     Subir Nuevo Documento
                                 </Link>
                             </div>
+
+                            {!canUploadDocument && (
+                                <div className="mb-4 p-4 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-lg">
+                                    Has alcanzado el límite de documentos para tu plan actual ({plan.name}). Para subir más, considera
+                                    actualizar tu plan.
+                                </div>
+                            )}
 
                             {documentos.length === 0 ? (
                                 <p>No tienes documentos importantes subidos.</p>

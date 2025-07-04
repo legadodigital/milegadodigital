@@ -35,16 +35,8 @@ class DocumentoImportanteController extends Controller
     {
         $user = auth()->user();
 
-        // Bypass plan limits if user is admin
-        if ($user->is_admin) {
-            // Admin can create unlimited documents
-        } else {
-            $plan = $user->plan->load('features');
-            $maxDocuments = $plan->features->where('feature_code', 'max_documents')->first()->value ?? 0;
-
-            if ($maxDocuments !== 'ilimitado' && $user->documentosImportantes()->count() >= (int)$maxDocuments) {
-                return redirect()->back()->withErrors(['limit' => 'Has alcanzado el límite de documentos importantes para tu plan.']);
-            }
+        if (!$user->is_admin && !$user->canUploadDocument()) {
+            return redirect()->back()->withErrors(['limit' => 'Has alcanzado el límite de documentos importantes para tu plan.']);
         }
 
         $validated = $request->validate([
