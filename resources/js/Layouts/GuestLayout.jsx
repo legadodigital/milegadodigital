@@ -10,7 +10,7 @@ export default function GuestLayout({ children }) {
             ></div>
             <div className="relative z-10">
                 <Link href="/">
-                    <ApplicationLogo className="h-40 w-40 fill-current text-gray-500" />
+                    <ApplicationLogo className="h-80 w-80 fill-current text-gray-500" />
                 </Link>
             </div>
 
