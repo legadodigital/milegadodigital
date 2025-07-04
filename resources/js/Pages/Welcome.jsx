@@ -4,7 +4,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo'; // Import the Applic
 export default function Welcome({ auth, plans }) {
     return (
         <>
-            <Head title="Bienvenido a Legado Digital" />
+            <Head title="Bienvenido a Mi Legado Digital" />
             <div
                 className="min-h-screen bg-cover bg-center font-sans"
 
