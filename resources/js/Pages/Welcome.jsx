@@ -212,7 +212,7 @@ export default function Welcome({ auth, plans }) {
                                 {plans.map((plan) => (
                                     <div key={plan.id} className="bg-white p-8 rounded-lg shadow-lg flex flex-col transform transition duration-300 hover:scale-105">
                                         <h3 className="text-2xl font-bold mb-4 text-calm-green-600">{plan.name}</h3>
-                                        <p className="text-5xl font-extrabold mb-4">${plan.price}<span className="text-lg font-medium text-gray-600">/mes</span></p>
+                                        <p className="text-5xl font-extrabold mb-4">$UF {plan.price}<span className="text-lg font-medium text-gray-600">/mes</span></p>
                                         <p className="text-gray-600 mb-6 flex-grow">{plan.description}</p>
                                         <ul className="mb-6 space-y-3">
                                             {plan.features.map((feature) => (
