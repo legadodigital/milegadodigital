@@ -212,17 +212,71 @@ export default function Welcome({ auth, plans }) {
                                 {plans.map((plan) => (
                                     <div key={plan.id} className="bg-white p-8 rounded-lg shadow-lg flex flex-col transform transition duration-300 hover:scale-105">
                                         <h3 className="text-2xl font-bold mb-4 text-calm-green-600">{plan.name}</h3>
-                                        <p className="text-5xl font-extrabold mb-4">$UF {plan.price}<span className="text-lg font-medium text-gray-600">/mes</span></p>
+                                        <p className="text-4xl font-extrabold mb-4">$UF {plan.price}<span className="text-lg font-medium text-gray-600">/mes</span></p>
                                         <p className="text-gray-600 mb-6 flex-grow">{plan.description}</p>
                                         <ul className="mb-6 space-y-3">
-                                            {plan.features.map((feature) => (
-                                                <li key={feature.id} className="flex items-center text-gray-700">
-                                                    <svg className="w-6 h-6 text-calm-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-                                                    </svg>
-                                                    <span className="font-medium">{featureTranslations[feature.feature_code] || feature.feature_code}:</span> {feature.value}
-                                                </li>
-                                            ))}
+                                            {plan.features.map((feature) => {
+                                                let displayValue = feature.value;
+                                                let featureName = featureTranslations[feature.feature_code] || feature.feature_code;
+                                                let isUnavailable = false;
+
+                                                if (feature.value === '-1') {
+                                                    displayValue = 'Ilimitado';
+                                                } else if (feature.feature_code === 'video_recording') {
+                                                    if (feature.value === 'false') {
+                                                        displayValue = 'No';
+                                                        isUnavailable = true;
+                                                    } else {
+                                                        displayValue = 'Sí';
+                                                    }
+                                                } else if (feature.feature_code === 'video_duration') {
+                                                    const duration = parseInt(feature.value, 10);
+                                                    if (duration === 0) {
+                                                        displayValue = 'No disponible';
+                                                        isUnavailable = true;
+                                                    } else if (duration % 60 === 0) {
+                                                        displayValue = `${duration / 60} minutos`;
+                                                    } else {
+                                                        displayValue = `${duration} segundos`;
+                                                    }
+                                                } else if (feature.feature_code === 'max_messages') {
+                                                    if (parseInt(feature.value, 10) === 0) {
+                                                        displayValue = 'No disponible';
+                                                        isUnavailable = true;
+                                                    } else {
+                                                        displayValue = `${feature.value} mensajes`;
+                                                    }
+                                                } else if (feature.feature_code === 'max_documents') {
+                                                    if (parseInt(feature.value, 10) === 0) {
+                                                        displayValue = 'No disponible';
+                                                        isUnavailable = true;
+                                                    } else {
+                                                        displayValue = `${feature.value} documentos`;
+                                                    }
+                                                } else if (feature.feature_code === 'max_trusted_contacts') {
+                                                    if (parseInt(feature.value, 10) === 0) {
+                                                        displayValue = 'No disponible';
+                                                        isUnavailable = true;
+                                                    } else {
+                                                        displayValue = `${feature.value} contactos`;
+                                                    }
+                                                }
+
+                                                return (
+                                                    <li key={feature.id} className="flex items-center text-gray-700">
+                                                        {isUnavailable ? (
+                                                            <svg className="w-6 h-6 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"></path>
+                                                            </svg>
+                                                        ) : (
+                                                            <svg className="w-6 h-6 text-calm-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                                                            </svg>
+                                                        )}
+                                                        <span className="font-medium">{featureName}:</span> {displayValue}
+                                                    </li>
+                                                );
+                                            })}
                                         </ul>
                                         <Link
                                             href={route('register')} // Or a specific plan registration route
