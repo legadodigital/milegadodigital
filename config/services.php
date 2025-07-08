@@ -35,4 +35,18 @@ return [
         ],
     ],
 
+    'transbank' => [
+        'webpay_plus' => [
+            'environment' => env('TRANSBANK_WEBPAY_PLUS_ENVIRONMENT', 'INTEGRACION'),
+            'commerce_code' => env('TRANSBANK_WEBPAY_PLUS_COMMERCE_CODE'),
+            'api_key' => env('TRANSBANK_WEBPAY_PLUS_API_KEY'),
+        ],
+        'oneclick' => [
+            'environment' => env('TRANSBANK_ONECLICK_ENVIRONMENT', 'INTEGRACION'),
+            'commerce_code' => env('TRANSBANK_ONECLICK_COMMERCE_CODE'),
+            'api_key' => env('TRANSBANK_ONECLICK_API_KEY'),
+            'child_commerce_code' => env('TRANSBANK_ONECLICK_CHILD_COMMERCE_CODE'),
+        ],
+    ],
+
 ];

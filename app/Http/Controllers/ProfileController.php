@@ -43,10 +43,45 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
-        $user->plan_id = $request->plan_id;
-        $user->save();
+        $newPlan = Plan::findOrFail($request->plan_id);
 
-        return Redirect::route('profile.edit')->with('status', 'Plan actualizado exitosamente.');
+        // If the new plan is free or the user is already on this plan, update directly
+        if ($newPlan->price == 0 || $user->plan_id === $newPlan->id) {
+            $user->plan_id = $newPlan->id;
+            $user->save();
+            return Redirect::route('profile.edit')->with('status', 'Plan actualizado exitosamente.');
+        } else {
+            // For paid plans, initiate Transbank payment
+            $request->session()->put('upgrade_plan_data', [
+                'user_id' => $user->id,
+                'new_plan_id' => $newPlan->id,
+            ]);
+            return Inertia::render('PaymentRedirect', ['plan_id' => $newPlan->id]);
+        }
+    }
+
+    /**
+     * Display the plan upgrade form.
+     */
+    public function showUpgradePlanForm(Request $request): Response
+    {
+        $plans = Plan::with('features')->get();
+        return Inertia::render('Profile/UpgradePlan', [
+            'availablePlans' => $plans,
+            'currentPlanId' => $request->user()->plan_id,
+            'oneclickInscriptions' => $request->user()->oneclickInscriptions()->get(),
+        ]);
+    }
+
+    /**
+     * Display the Oneclick management form.
+     */
+    public function showOneclickManagement(Request $request): Response
+    {
+        $inscriptions = $request->user()->oneclickInscriptions()->get();
+        return Inertia::render('Profile/OneclickManagement', [
+            'inscriptions' => $inscriptions,
+        ]);
     }
 
     /**

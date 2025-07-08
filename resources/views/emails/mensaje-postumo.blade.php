@@ -15,7 +15,7 @@
         <p style="white-space: pre-wrap;">{{ $mensajePostumo->mensaje }}</p>
         <hr style="border-color: #a7f3d0;">
         <p>Con cariño,</p>
-        <p>El equipo de Legado Digital</p>
+        <p>El equipo de Mi Legado Virtual</p>
     </div>
 </body>
 </html>

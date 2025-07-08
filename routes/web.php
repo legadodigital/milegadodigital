@@ -8,14 +8,6 @@ use App\Http\Controllers\RecuerdoController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Mail\TestMail;
-use Illuminate\Support\Facades\Mail;
-
-Route::get('/test-mail', function () {
-    Mail::to('calvarle@gmail.com')->send(new TestMail());
-    return 'Correo de prueba enviado.';
-});
-
 use App\Models\Plan;
 
 Route::get('/', function () {
@@ -33,6 +25,18 @@ use App\Models\MensajePostumo;
 use App\Models\DocumentoImportante;
 use App\Models\Recuerdo;
 use Illuminate\Support\Facades\Auth;
+
+Route::get('/payment-redirect', function () {
+    return Inertia::render('PaymentRedirect');
+})->name('payment.redirect');
+
+Route::post('/webpay/initiate', [App\Http\Controllers\TransbankController::class, 'initiateWebpayTransaction'])->name('webpay.initiate');
+Route::any('/webpay/return', [App\Http\Controllers\TransbankController::class, 'returnFromWebpay'])->name('webpay.return');
+
+Route::post('/oneclick/initiate-inscription', [App\Http\Controllers\TransbankController::class, 'initiateOneclickInscription'])->name('oneclick.initiateInscription');
+Route::any('/oneclick/return-inscription', [App\Http\Controllers\TransbankController::class, 'returnFromOneclickInscription'])->name('oneclick.return');
+Route::post('/oneclick/payment', [App\Http\Controllers\TransbankController::class, 'initiateOneclickPayment'])->name('oneclick.payment');
+Route::delete('/oneclick/inscriptions/{oneclickInscription}', [App\Http\Controllers\TransbankController::class, 'deleteOneclickInscription'])->name('oneclick.destroy');
 
 Route::get('/dashboard', function () {
     $user = Auth::user();
@@ -56,6 +60,8 @@ Route::middleware('auth')->group(function () {
 
     // Rutas para actualizar el plan del usuario
     Route::patch('/profile/plan', [ProfileController::class, 'updatePlan'])->name('profile.updatePlan');
+    Route::get('/profile/upgrade-plan', [ProfileController::class, 'showUpgradePlanForm'])->name('profile.upgradePlanForm');
+    Route::get('/profile/oneclick', [ProfileController::class, 'showOneclickManagement'])->name('profile.oneclick');
 
     // Rutas para Configuración de Seguridad
     Route::get('/seguridad', [ProfileController::class, 'security'])->name('profile.security');

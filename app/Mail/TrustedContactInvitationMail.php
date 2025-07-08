@@ -9,16 +9,20 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class TestMail extends Mailable
+class TrustedContactInvitationMail extends Mailable
 {
     use Queueable, SerializesModels;
+
+    public $inviterName;
+    public $contactName;
 
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(string $inviterName, string $contactName)
     {
-        //
+        $this->inviterName = $inviterName;
+        $this->contactName = $contactName;
     }
 
     /**
@@ -27,7 +31,7 @@ class TestMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Prueba de Correo desde Mi Legado Digital',
+            subject: 'Has sido añadido como Contacto de Confianza en Mi Legado Virtual',
         );
     }
 
@@ -37,7 +41,11 @@ class TestMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.test',
+            view: 'emails.trusted-contact-invitation',
+            with: [
+                'inviterName' => $this->inviterName,
+                'contactName' => $this->contactName,
+            ],
         );
     }
 

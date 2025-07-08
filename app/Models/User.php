@@ -122,4 +122,12 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Plan::class);
     }
+
+    /**
+     * Get the Oneclick inscriptions for the user.
+     */
+    public function oneclickInscriptions(): HasMany
+    {
+        return $this->hasMany(OneclickInscription::class);
+    }
 }
