@@ -73,16 +73,16 @@ export default function Welcome({ auth, plans }) {
                         <div className="absolute inset-0 bg-earthy-green-900/60"></div> {/* Overlay for readability */}
                         <div className="relative z-10 max-w-4xl mx-auto">
                             <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-4 animate-fade-in-up">
-                                Mi Legado Virtual: Tu Voz, Tu Historia, Para Siempre.
+                                Tu Legado Virtual, un Puente de Amor Eterno
                             </h1>
                             <p className="text-xl md:text-2xl mb-8 animate-fade-in-up animation-delay-200">
-                                Preserva tus recuerdos y mensajes más importantes para tus seres queridos, entregados cuando más los necesiten.
+                                En Mi Legado Virtual, te ofrecemos un espacio sagrado y seguro para que puedas dejar mensajes póstumos, videos llenos de amor y documentos importantes a tus seres queridos. Nuestra misión es que tu voz, tus recuerdos y tu voluntad perduren, siendo entregados en el momento preciso para consolar, guiar y proteger a quienes más amas.
                             </p>
                             <Link
                                 href={route('register')}
                                 className="inline-block px-8 py-3 bg-calm-green-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-calm-green-700 transition duration-300 transform hover:scale-105 animate-fade-in-up animation-delay-400"
                             >
-                                Crea tu Legado Hoy
+                                Comienza a Construir tu Legado
                             </Link>
                         </div>
                     </section>
