@@ -69,8 +69,12 @@ export default function Welcome({ auth, plans }) {
 
                 <div className="relative pt-20"> {/* Adjusted padding for fixed header */}
                     {/* Hero Section */}
-                    <section id="inicio" className="relative flex items-center justify-center min-h-[calc(100vh-80px)] text-white text-center p-6">
-                        <div className="absolute inset-0 bg-earthy-green-900/60"></div> {/* Overlay for readability */}
+                    <section
+                        id="inicio"
+                        className="relative flex items-center justify-center min-h-[calc(100vh-80px)] text-white text-center p-6 bg-cover bg-center bg-no-repeat"
+                        style={{ backgroundImage: "url('/img/hero-section.png')" }}
+                    >
+                        <div className="absolute inset-0 bg-black/60"></div> {/* Overlay for readability */}
                         <div className="relative z-10 max-w-4xl mx-auto">
                             <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-4 animate-fade-in-up">
                                 Tu Legado Virtual, un Puente de Amor Eterno
