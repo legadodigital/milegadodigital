@@ -21,7 +21,10 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Auth/Register');
+        $plans = \App\Models\Plan::all();
+        return Inertia::render('Auth/Register', [
+            'plans' => $plans,
+        ]);
     }
 
     /**
@@ -29,7 +32,7 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): Response
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -38,6 +41,22 @@ class RegisteredUserController extends Controller
             'plan_id' => 'required|exists:plans,id',
         ]);
 
+        $plan = Plan::findOrFail($request->plan_id);
+
+        if ($plan->price > 0) {
+            // Store registration data in session for later retrieval after payment
+            $request->session()->put('registration_data', [
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->password,
+                'plan_id' => $request->plan_id,
+            ]);
+
+            // Redirect to a route that initiates Transbank payment
+            return Inertia::render('PaymentRedirect', ['plan_id' => $plan->id]);
+        }
+
+        // For free plans, proceed with user creation and login
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,

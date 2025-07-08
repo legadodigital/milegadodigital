@@ -17,6 +17,10 @@ export default function GuestLayout({ children }) {
             <div className="relative z-10 mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg">
                 {children}
             </div>
+
+            <footer className="mt-8 text-center text-gray-500 text-sm relative z-10">
+                &copy; {new Date().getFullYear()} Mi Legado Digital. Todos los derechos reservados.
+            </footer>
         </div>
     );
 }

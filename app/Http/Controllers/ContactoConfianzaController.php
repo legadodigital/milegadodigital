@@ -47,7 +47,7 @@ class ContactoConfianzaController extends Controller
             'notas' => 'nullable|string',
         ]);
 
-        ContactoConfianza::create([
+        $contacto = ContactoConfianza::create([
             'user_id' => auth()->id(),
             'nombre' => $validated['nombre'],
             'email' => $validated['email'],
@@ -59,7 +59,10 @@ class ContactoConfianzaController extends Controller
             'notas' => $validated['notas'],
         ]);
 
-        return redirect()->route('contactos-confianza.index')->with('success', 'Contacto de confianza creado exitosamente.');
+        // Send invitation email
+        \Mail::to($contacto->email)->send(new \App\Mail\TrustedContactInvitationMail(auth()->user()->name, $contacto->nombre));
+
+        return redirect()->route('contactos-confianza.index')->with('success', 'Contacto de confianza creado exitosamente y correo de invitación enviado.');
     }
 
     /**

@@ -119,6 +119,16 @@ export default function AuthenticatedLayout({ header, children }) {
                                             Seguridad
                                         </Dropdown.Link>
                                         <Dropdown.Link
+                                            href={route('profile.upgradePlanForm')}
+                                        >
+                                            Actualizar Plan
+                                        </Dropdown.Link>
+                                        <Dropdown.Link
+                                            href={route('profile.oneclick')}
+                                        >
+                                            Gestionar Oneclick
+                                        </Dropdown.Link>
+                                        <Dropdown.Link
                                             href={route('logout')}
                                             method="post"
                                             as="button"
