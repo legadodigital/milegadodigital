@@ -28,7 +28,9 @@ class TransbankController extends Controller
         $sessionId = 'session-' . uniqid();
         $returnUrl = route('webpay.return');
 
-        $response = (new Transaction)->create($buyOrder, $sessionId, $amount, $returnUrl);
+        $transaction = new Transaction();
+        $transaction->configureForIntegration(config('services.transbank.webpay_plus.commerce_code'), config('services.transbank.webpay_plus.api_key'));
+        $response = $transaction->create($buyOrder, $sessionId, $amount, $returnUrl);
 
         return Inertia::location($response->getUrl() . '?token_ws=' . $response->getToken());
     }
@@ -36,7 +38,9 @@ class TransbankController extends Controller
     public function returnFromWebpay(Request $request)
     {
         $token = $request->get('token_ws');
-        $response = (new Transaction)->commit($token);
+        $transaction = new Transaction();
+        $transaction->configureForIntegration(config('services.transbank.webpay_plus.commerce_code'), config('services.transbank.webpay_plus.api_key'));
+        $response = $transaction->commit($token);
 
         if ($response->isApproved()) {
             $registrationData = $request->session()->get('registration_data');
