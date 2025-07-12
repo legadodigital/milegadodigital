@@ -16,6 +16,7 @@ use Inertia\Inertia;
 
 class TransbankController extends Controller
 {
+
     public function initiateWebpayTransaction(Request $request)
     {
         $request->validate([
@@ -28,19 +29,39 @@ class TransbankController extends Controller
         $sessionId = 'session-' . uniqid();
         $returnUrl = route('webpay.return');
 
-        $transaction = new Transaction();
-        $transaction->configureForIntegration(config('services.transbank.webpay_plus.commerce_code'), config('services.transbank.webpay_plus.api_key'));
-        $response = $transaction->create($buyOrder, $sessionId, $amount, $returnUrl);
+        if (config('services.transbank.webpay_plus.environment') === 'PRODUCCION') {
+            $tx = Transaction::buildForProduction(
+                config('services.transbank.webpay_plus.api_key'),
+                config('services.transbank.webpay_plus.commerce_code')
+            );
+        } else {
+            $tx = Transaction::buildForIntegration(
+                config('services.transbank.webpay_plus.api_key'),
+                config('services.transbank.webpay_plus.commerce_code')
+            );
+        }
+
+        $response = $tx->create($buyOrder, $sessionId, $amount, $returnUrl);
 
         return Inertia::location($response->getUrl() . '?token_ws=' . $response->getToken());
     }
 
     public function returnFromWebpay(Request $request)
     {
+        if (config('services.transbank.webpay_plus.environment') === 'PRODUCCION') {
+            $tx = Transaction::buildForProduction(
+                config('services.transbank.webpay_plus.api_key'),
+                config('services.transbank.webpay_plus.commerce_code')
+            );
+        } else {
+            $tx = Transaction::buildForIntegration(
+                config('services.transbank.webpay_plus.api_key'),
+                config('services.transbank.webpay_plus.commerce_code')
+            );
+        }
+
         $token = $request->get('token_ws');
-        $transaction = new Transaction();
-        $transaction->configureForIntegration(config('services.transbank.webpay_plus.commerce_code'), config('services.transbank.webpay_plus.api_key'));
-        $response = $transaction->commit($token);
+        $response = $tx->commit($token);
 
         if ($response->isApproved()) {
             $registrationData = $request->session()->get('registration_data');

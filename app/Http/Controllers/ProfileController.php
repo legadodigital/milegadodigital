@@ -56,7 +56,7 @@ class ProfileController extends Controller
                 'user_id' => $user->id,
                 'new_plan_id' => $newPlan->id,
             ]);
-            return Inertia::render('PaymentRedirect', ['plan_id' => $newPlan->id]);
+            return Redirect::route('payment.redirect', ['plan_id' => $newPlan->id]);
         }
     }
 
