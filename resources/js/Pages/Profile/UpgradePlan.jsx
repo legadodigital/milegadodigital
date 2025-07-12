@@ -7,7 +7,7 @@ import InputError from '@/Components/InputError';
 export default function UpgradePlan({ auth, availablePlans, currentPlanId, oneclickInscriptions }) {
     const [paymentMethod, setPaymentMethod] = useState('webpay'); // 'webpay' or 'oneclick'
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, patch, processing, errors } = useForm({
         plan_id: currentPlanId,
         tbk_user: '',
     });
@@ -26,13 +26,13 @@ export default function UpgradePlan({ auth, availablePlans, currentPlanId, onecl
 
         if (selectedPlan && selectedPlan.price > 0) {
             if (paymentMethod === 'webpay') {
-                post(route('profile.updatePlan')); // This will redirect to PaymentRedirect -> webpay.initiate
+                patch(route('profile.updatePlan')); // This will redirect to PaymentRedirect -> webpay.initiate
             } else if (paymentMethod === 'oneclick') {
                 post(route('oneclick.payment'));
             }
         } else {
             // Free plan, update directly
-            post(route('profile.updatePlan'));
+            patch(route('profile.updatePlan'));
         }
     };
 
