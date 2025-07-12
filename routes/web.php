@@ -9,6 +9,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Plan;
+use Illuminate\Http\Request; // Add this line
 
 Route::get('/', function () {
     $plans = Plan::with('features')->get();
@@ -26,8 +27,9 @@ use App\Models\DocumentoImportante;
 use App\Models\Recuerdo;
 use Illuminate\Support\Facades\Auth;
 
-Route::get('/payment-redirect', function () {
-    return Inertia::render('PaymentRedirect');
+Route::get('/payment-redirect', function (Request $request) {
+    $planId = $request->query('plan_id');
+    return Inertia::render('PaymentRedirect', ['plan_id' => $planId]);
 })->name('payment.redirect');
 
 Route::post('/webpay/initiate', [App\Http\Controllers\TransbankController::class, 'initiateWebpayTransaction'])->name('webpay.initiate');

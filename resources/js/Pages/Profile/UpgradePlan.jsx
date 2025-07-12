@@ -5,6 +5,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import InputError from '@/Components/InputError';
 
 export default function UpgradePlan({ auth, availablePlans, currentPlanId, oneclickInscriptions }) {
+    console.log('Available Plans:', availablePlans);
     const [paymentMethod, setPaymentMethod] = useState('webpay'); // 'webpay' or 'oneclick'
 
     const { data, setData, post, patch, processing, errors } = useForm({
@@ -26,13 +27,35 @@ export default function UpgradePlan({ auth, availablePlans, currentPlanId, onecl
 
         if (selectedPlan && selectedPlan.price > 0) {
             if (paymentMethod === 'webpay') {
-                patch(route('profile.updatePlan')); // This will redirect to PaymentRedirect -> webpay.initiate
+                patch(route('profile.updatePlan'), {
+                    onSuccess: () => {
+                        console.log('Patch request successful for Webpay!');
+                        // Inertia should handle the redirect from the server
+                    },
+                    onError: (errors) => {
+                        console.error('Patch request failed for Webpay:', errors);
+                    }
+                });
             } else if (paymentMethod === 'oneclick') {
-                post(route('oneclick.payment'));
+                post(route('oneclick.payment'), {
+                    onSuccess: () => {
+                        console.log('Post request successful for Oneclick!');
+                    },
+                    onError: (errors) => {
+                        console.error('Post request failed for Oneclick:', errors);
+                    }
+                });
             }
         } else {
             // Free plan, update directly
-            patch(route('profile.updatePlan'));
+            patch(route('profile.updatePlan'), {
+                onSuccess: () => {
+                    console.log('Patch request successful for free plan!');
+                },
+                onError: (errors) => {
+                    console.error('Patch request failed for free plan:', errors);
+                }
+            });
         }
     };
 

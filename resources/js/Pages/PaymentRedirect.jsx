@@ -3,11 +3,11 @@ import { useForm, Head } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
 
 export default function PaymentRedirect({ plan_id }) {
-    const { post } = useForm();
+    const { post } = useForm({ plan_id: plan_id });
 
     useEffect(() => {
         if (plan_id) {
-            post(route('webpay.initiate'), { plan_id: plan_id });
+            post(route('webpay.initiate'));
         }
     }, [plan_id]);
 
