@@ -23,7 +23,7 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        $plans = \App\Models\Plan::all();
+        $plans = \App\Models\Plan::orderBy('price')->get();
         return Inertia::render('Auth/Register', [
             'plans' => $plans,
         ]);

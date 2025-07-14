@@ -23,7 +23,7 @@ class ProfileController extends Controller
         $user = $request->user();
         $user->load('plan.features'); // Load user's current plan with its features
 
-        $plans = Plan::with('features')->get(); // Get all available plans with their features
+        $plans = Plan::with('features')->orderBy('price')->get(); // Get all available plans with their features
 
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,

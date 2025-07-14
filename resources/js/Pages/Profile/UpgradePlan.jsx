@@ -24,12 +24,12 @@ export default function UpgradePlan({ auth, availablePlans, currentPlanId, onecl
 
         const monthlyPrice = parseFloat(plan.price);
         if (billingCycle === 'monthly') {
-            return `${monthlyPrice.toFixed(2)}/mes`;
+            return `${Math.round(monthlyPrice).toLocaleString('es-CL')}/mes`;
         } else {
             const annualPriceBeforeDiscount = monthlyPrice * 12;
             const discountAmount = annualPriceBeforeDiscount * (parseFloat(plan.annual_discount_percentage) / 100);
             const annualPriceAfterDiscount = annualPriceBeforeDiscount - discountAmount;
-            return `${annualPriceAfterDiscount.toFixed(2)}/año (Ahorra ${plan.annual_discount_percentage}%)`;
+            return `${Math.round(annualPriceAfterDiscount).toLocaleString('es-CL')}/año (Ahorra ${plan.annual_discount_percentage}%)`;
         }
     };
 
@@ -206,11 +206,11 @@ export default function UpgradePlan({ auth, availablePlans, currentPlanId, onecl
                                         <h5 className="text-xl font-bold mb-2">{plan.name}</h5>
                                         <p className="text-gray-600 mb-4">{plan.description}</p>
                                         {plan.price > 0 && (
-                                            <p className="text-gray-800 font-semibold mb-2">Mensual: ${parseFloat(plan.price).toFixed(2)}/mes</p>
+                                            <p className="text-gray-800 font-semibold mb-2">Mensual: ${Math.round(parseFloat(plan.price)).toLocaleString('es-CL')}/mes</p>
                                         )}
                                         {plan.price > 0 && parseFloat(plan.annual_discount_percentage) > 0 && (
                                             <p className="text-gray-800 font-semibold mb-4">
-                                                Anual: ${((parseFloat(plan.price) * 12) * (1 - parseFloat(plan.annual_discount_percentage) / 100)).toFixed(2)}/año (Ahorra {parseFloat(plan.annual_discount_percentage).toFixed(0)}%)
+                                                Anual: ${Math.round(((parseFloat(plan.price) * 12) * (1 - parseFloat(plan.annual_discount_percentage) / 100))).toLocaleString('es-CL')}/año (Ahorra {parseFloat(plan.annual_discount_percentage).toFixed(0)}%)
                                             </p>
                                         )}
                                         <ul className="space-y-2">
