@@ -23,12 +23,12 @@ export default function Register({ plans }) {
 
         const monthlyPrice = parseFloat(plan.price);
         if (data.billing_cycle === 'monthly') {
-            return `${monthlyPrice.toFixed(2)}/mes`;
+            return `${Math.round(monthlyPrice).toLocaleString('es-CL')}/mes`;
         } else {
             const annualPriceBeforeDiscount = monthlyPrice * 12;
             const discountAmount = annualPriceBeforeDiscount * (parseFloat(plan.annual_discount_percentage) / 100);
             const annualPriceAfterDiscount = annualPriceBeforeDiscount - discountAmount;
-            return `${annualPriceAfterDiscount.toFixed(2)}/año (Ahorra ${plan.annual_discount_percentage}%)`;
+            return `${Math.round(annualPriceAfterDiscount).toLocaleString('es-CL')}/año (Ahorra ${plan.annual_discount_percentage}%)`;
         }
     };
 
