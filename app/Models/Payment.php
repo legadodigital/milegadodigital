@@ -19,6 +19,7 @@ class Payment extends Model
         'payment_method',
         'card_number',
         'transaction_date',
+        'billing_cycle',
     ];
 
     protected $casts = [
