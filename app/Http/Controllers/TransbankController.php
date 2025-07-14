@@ -77,8 +77,8 @@ class TransbankController extends Controller
         $planId = null;
         $billingCycle = null;
 
+        // Determine planId and billingCycle based on session data or request
         if ($registrationData) {
-            $userId = null; // User not created yet, will be created after successful payment
             $planId = $registrationData['plan_id'];
             $billingCycle = $registrationData['billing_cycle'];
         } else if ($upgradePlanData) {
@@ -87,9 +87,14 @@ class TransbankController extends Controller
             $billingCycle = $upgradePlanData['billing_cycle'];
         } else if (Auth::check()) {
             $userId = Auth::id();
-            // Try to get plan_id from the request if it's an existing user making a payment not related to upgrade/registration
             $planId = $request->input('plan_id');
-            $billingCycle = $request->input('billing_cycle', 'monthly'); // Default to monthly if not provided
+            $billingCycle = $request->input('billing_cycle', 'monthly'); // For existing users, get from request or default
+        }
+
+        // If billingCycle is still null (e.g., if it's a direct return from Transbank without session data),
+        // try to get it from the request or default to 'monthly'.
+        if (is_null($billingCycle)) {
+            $billingCycle = $request->input('billing_cycle', 'monthly');
         }
 
         // Ensure we have a user ID for the payment record
@@ -104,39 +109,37 @@ class TransbankController extends Controller
             // For new registrations, we'll update the payment record after user creation.
         }
 
-        // Log the payment attempt/result
-        $payment = Payment::create([
-            'user_id' => $userId, // Will be null for new registrations, updated later
-            'plan_id' => $planId,
-            'billing_cycle' => $billingCycle,
-            'amount' => $response->getAmount(),
-            'buy_order' => $response->getBuyOrder(),
-            'session_id' => $response->getSessionId(),
-            'token_ws' => $token,
-            'status' => $response->isApproved() ? 'approved' : 'rejected',
-            'transbank_response' => json_encode([
-                'vci' => $response->getVci(),
-                'status' => $response->getStatus(),
-                'response_code' => $response->getResponseCode(),
-                'amount' => $response->getAmount(),
-                'authorization_code' => $response->getAuthorizationCode(),
-                'payment_type_code' => $response->getPaymentTypeCode(),
-                'accounting_date' => $response->getAccountingDate(),
-                'installments_number' => $response->getInstallmentsNumber(),
-                'installments_amount' => $response->getInstallmentsAmount(),
-                'session_id' => $response->getSessionId(),
-                'buy_order' => $response->getBuyOrder(),
-                'card_number' => $response->getCardNumber(),
-                'card_detail' => $response->getCardDetail(),
-                'transaction_date' => $response->getTransactionDate(),
-                'balance' => $response->getBalance(),
-            ]),
-            'payment_method' => 'webpay',
-            'card_number' => $response->getCardNumber(),
-            'transaction_date' => now(),
-        ]);
-
         if ($response->isApproved()) {
+            $paymentData = [
+                'plan_id' => $planId,
+                'billing_cycle' => $billingCycle,
+                'amount' => $response->getAmount(),
+                'buy_order' => $response->getBuyOrder(),
+                'session_id' => $response->getSessionId(),
+                'token_ws' => $token,
+                'status' => 'approved',
+                'transbank_response' => json_encode([
+                    'vci' => $response->getVci(),
+                    'status' => $response->getStatus(),
+                    'response_code' => $response->getResponseCode(),
+                    'amount' => $response->getAmount(),
+                    'authorization_code' => $response->getAuthorizationCode(),
+                    'payment_type_code' => $response->getPaymentTypeCode(),
+                    'accounting_date' => $response->getAccountingDate(),
+                    'installments_number' => $response->getInstallmentsNumber(),
+                    'installments_amount' => $response->getInstallmentsAmount(),
+                    'session_id' => $response->getSessionId(),
+                    'buy_order' => $response->getBuyOrder(),
+                    'card_number' => $response->getCardNumber(),
+                    'card_detail' => $response->getCardDetail(),
+                    'transaction_date' => $response->getTransactionDate(),
+                    'balance' => $response->getBalance(),
+                ]),
+                'payment_method' => 'webpay',
+                'card_number' => $response->getCardNumber(),
+                'transaction_date' => now(),
+            ];
+
             if ($registrationData) {
                 $user = User::create([
                     'name' => $registrationData['name'],
@@ -151,9 +154,8 @@ class TransbankController extends Controller
 
                 $request->session()->forget('registration_data');
 
-                // Update the payment record with the newly created user_id
-                $payment->user_id = $user->id;
-                $payment->save();
+                $paymentData['user_id'] = $user->id;
+                Payment::create($paymentData);
 
                 return Inertia::render('PaymentSuccess', [
                     'message' => '¡Pago exitoso! Tu plan ha sido activado y tu cuenta creada.',
@@ -165,13 +167,26 @@ class TransbankController extends Controller
                     $user->plan_id = $upgradePlanData['new_plan_id'];
                     $user->save();
                     $request->session()->forget('upgrade_plan_data');
+
+                    $paymentData['user_id'] = $user->id;
+                    Payment::create($paymentData);
+
                     return Inertia::render('PaymentSuccess', [
                         'message' => '¡Pago exitoso! Tu plan ha sido actualizado.',
                         'response' => $response,
                     ]);
                 }
+            } else if (Auth::check()) {
+                // Existing user making a payment not related to upgrade/registration
+                $paymentData['user_id'] = Auth::id();
+                Payment::create($paymentData);
+
+                return Inertia::render('PaymentSuccess', [
+                    'message' => '¡Pago exitoso!',
+                    'response' => $response,
+                ]);
             } else {
-                // Handle case where no relevant session data is found
+                // Handle case where no relevant session data is found and user is not authenticated
                 return Inertia::render('PaymentFailure', [
                     'message' => 'El pago fue exitoso, pero no se pudo completar la operación. Por favor, contacta a soporte.',
                     'response' => $response,
@@ -179,6 +194,37 @@ class TransbankController extends Controller
             }
         } else {
             // Payment failed
+            // Create a payment record for rejected payment
+            Payment::create([
+                'user_id' => $userId, // This might still be null if it was a new registration attempt
+                'plan_id' => $planId,
+                'billing_cycle' => $billingCycle,
+                'amount' => $response->getAmount(),
+                'buy_order' => $response->getBuyOrder(),
+                'session_id' => $response->getSessionId(),
+                'token_ws' => $token,
+                'status' => 'rejected',
+                'transbank_response' => json_encode([
+                    'vci' => $response->getVci(),
+                    'status' => $response->getStatus(),
+                    'response_code' => $response->getResponseCode(),
+                    'amount' => $response->getAmount(),
+                    'authorization_code' => $response->getAuthorizationCode(),
+                    'payment_type_code' => $response->getPaymentTypeCode(),
+                    'accounting_date' => $response->getAccountingDate(),
+                    'installments_number' => $response->getInstallmentsNumber(),
+                    'installments_amount' => $response->getInstallmentsAmount(),
+                    'session_id' => $response->getSessionId(),
+                    'buy_order' => $response->getBuyOrder(),
+                    'card_number' => $response->getCardNumber(),
+                    'card_detail' => $response->getCardDetail(),
+                    'transaction_date' => $response->getTransactionDate(),
+                    'balance' => $response->getBalance(),
+                ]),
+                'payment_method' => 'webpay',
+                'card_number' => $response->getCardNumber(),
+                'transaction_date' => now(),
+            ]);
             return Inertia::render('PaymentFailure', [
                 'message' => 'El pago ha fallado. Por favor, inténtalo de nuevo.',
                 'response' => $response,
