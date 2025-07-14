@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 
 export default function Index({ auth, documentos }) {
     const { delete: destroy } = useForm();
@@ -14,6 +15,8 @@ export default function Index({ auth, documentos }) {
         }
     };
 
+    const [showHelp, setShowHelp] = useState(false);
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -21,10 +24,33 @@ export default function Index({ auth, documentos }) {
         >
             <Head title="Documentos Importantes" />
 
-            <div className="py-12">
+            <div className="py-6">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
+                            <button
+                                onClick={() => setShowHelp(!showHelp)}
+                                className="mb-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
+                            >
+                                {showHelp ? 'Ocultar Ayuda' : 'Mostrar Ayuda'}
+                            </button>
+
+                            {showHelp && (
+                                <div className="mb-4 p-4 bg-blue-100 border border-blue-200 text-blue-800 rounded-lg">
+                                    <h3 className="font-bold text-lg mb-2">Ayuda: Documentos Importantes</h3>
+                                    <p className="mb-2">
+                                        Aquí puedes subir y gestionar tus documentos importantes de forma segura.
+                                    </p>
+                                    <ul className="list-disc list-inside">
+                                        <li><strong>Subir Nuevo Documento:</strong> Permite cargar archivos importantes, categorizarlos y definir su nivel de acceso.</li>
+                                        <li><strong>Descargar:</strong> Descarga una copia de tus documentos.</li>
+                                        <li><strong>Editar:</strong> Modifica los detalles de un documento existente.</li>
+                                        <li><strong>Eliminar:</strong> Borra un documento de forma permanente.</li>
+                                        <li><strong>Nivel de Acceso:</strong> Controla quién puede acceder a tus documentos (privado, contactos de confianza, o público).</li>
+                                    </ul>
+                                </div>
+                            )}
+
                             <div className="flex justify-end mb-4">
                                 <Link
                                     href={route('documentos-importantes.create')}

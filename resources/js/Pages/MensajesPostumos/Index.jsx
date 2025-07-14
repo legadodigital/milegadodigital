@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
+import { useState } from 'react';
 
 export default function Index({ auth, mensajes }) {
     const { delete: destroy } = useForm();
@@ -15,6 +16,8 @@ export default function Index({ auth, mensajes }) {
         }
     };
 
+    const [showHelp, setShowHelp] = useState(false);
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -22,10 +25,32 @@ export default function Index({ auth, mensajes }) {
         >
             <Head title="Mensajes Póstumos" />
 
-            <div className="py-12">
+            <div className="py-6">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
+                            <button
+                                onClick={() => setShowHelp(!showHelp)}
+                                className="mb-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
+                            >
+                                {showHelp ? 'Ocultar Ayuda' : 'Mostrar Ayuda'}
+                            </button>
+
+                            {showHelp && (
+                                <div className="mb-4 p-4 bg-blue-100 border border-blue-200 text-blue-800 rounded-lg">
+                                    <h3 className="font-bold text-lg mb-2">Ayuda: Mensajes Póstumos</h3>
+                                    <p className="mb-2">
+                                        Aquí puedes gestionar tus mensajes póstumos. Estos mensajes serán entregados a tus seres queridos después de tu fallecimiento.
+                                    </p>
+                                    <ul className="list-disc list-inside">
+                                        <li><strong>Crear Nuevo Mensaje:</strong> Permite redactar un nuevo mensaje, adjuntar archivos (imágenes, videos, audios) y especificar el destinatario y la fecha de entrega.</li>
+                                        <li><strong>Editar:</strong> Modifica el contenido, destinatario o archivo de un mensaje existente.</li>
+                                        <li><strong>Eliminar:</strong> Borra un mensaje póstumo de forma permanente.</li>
+                                        <li><strong>Estado:</strong> Indica si el mensaje está pendiente de envío, ya fue enviado, leído o si hubo un fallo en la entrega.</li>
+                                    </ul>
+                                </div>
+                            )}
+
                             <div className="flex justify-end mb-4">
                                 <Link
                                     href={route('mensajes-postumos.create')}
