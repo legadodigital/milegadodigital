@@ -58,7 +58,7 @@ export default function VideoRecorder({ auth }) {
             };
             mediaRecorderRef.current.onstop = async () => {
                 const blob = new Blob(recordedChunksRef.current, {
-                    type: 'video/webm'
+                    type: 'video/mp4'
                 });
                 const url = URL.createObjectURL(blob);
                 setVideoURL(url);
@@ -72,7 +72,7 @@ export default function VideoRecorder({ auth }) {
 
                 // Upload video to temporary storage
                 const formData = new FormData();
-                formData.append('video', blob, 'recorded-video.webm');
+                formData.append('video', blob, 'recorded-video.mp4');
 
                 try {
                     const response = await fetch(route('mensajes-postumos.uploadVideoTemp'), {
@@ -117,7 +117,7 @@ export default function VideoRecorder({ auth }) {
     const handleDownload = () => {
         const a = document.createElement('a');
         a.href = videoURL;
-        a.download = 'legado-digital-video.webm';
+        a.download = 'legado-digital-video.mp4';
         a.click();
     };
 

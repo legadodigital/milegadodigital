@@ -55,7 +55,7 @@ class RecuerdoController extends Controller
             'fecha_recuerdo' => 'nullable|date',
             'visibilidad' => 'required|in:privado,contactos,publico',
             'archivos' => 'nullable|array',
-            'archivos.*' => 'file|mimes:jpeg,png,jpg,gif,mp4,mov,ogg,qt,mp3,wav,aac|max:204800', // 200MB max
+            'archivos.*' => 'file|mimes:jpeg,png,jpg,gif,mp3,wav,aac|max:20480', // 20MB max
         ]);
 
         $recuerdo = Recuerdo::create([
@@ -113,7 +113,7 @@ class RecuerdoController extends Controller
             'fecha_recuerdo' => 'nullable|date',
             'visibilidad' => 'required|in:privado,contactos,publico',
             'archivos' => 'nullable|array',
-            'archivos.*' => 'file|mimes:jpeg,png,jpg,gif,mp4,mov,ogg,qt,mp3,wav,aac|max:204800', // 200MB max
+            'archivos.*' => 'file|mimes:jpeg,png,jpg,gif,mp3,wav,aac|max:20480', // 20MB max
             'archivos_existentes_ids' => 'nullable|array',
             'archivos_existentes_ids.*' => 'exists:recuerdos_media,id',
         ]);

@@ -89,6 +89,7 @@ export default function Create({ auth }) {
                                             onChange={(e) => setData('archivo', e.target.files[0])}
                                         />
                                         <InputError className="mt-2" message={errors.archivo} />
+                                        <p className="mt-2 text-sm text-gray-600">Formatos permitidos: Imágenes (JPG, PNG, GIF, BMP, SVG, WEBP), Video (MP4, MOV, OGG, QT), Audio (MP3, WAV, AAC). Tamaño máximo: 20MB.</p>
                                     </div>
                                 )}
 

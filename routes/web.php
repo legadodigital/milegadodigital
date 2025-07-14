@@ -12,7 +12,7 @@ use App\Models\Plan;
 use Illuminate\Http\Request; // Add this line
 
 Route::get('/', function () {
-    $plans = Plan::with('features')->get();
+    $plans = Plan::with('features')->orderBy('price')->get();
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
