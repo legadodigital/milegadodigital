@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Payment; // Add this line
 
 class User extends Authenticatable
 {
@@ -129,5 +130,13 @@ class User extends Authenticatable
     public function oneclickInscriptions(): HasMany
     {
         return $this->hasMany(OneclickInscription::class);
+    }
+
+    /**
+     * Get the payments for the user.
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
     }
 }

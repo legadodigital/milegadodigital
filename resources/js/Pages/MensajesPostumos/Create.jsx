@@ -1,25 +1,38 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
+import { useEffect } from 'react';
 
 export default function Create({ auth }) {
+    const { props } = usePage();
+    const { temp_video_path } = props;
+
     const { data, setData, post, processing, errors, reset } = useForm({
         titulo: '',
         contenido: '',
-        tipo_mensaje: 'texto',
+        tipo_mensaje: temp_video_path ? 'video' : 'texto',
         destinatario_email: '',
         destinatario_nombre: '',
         fecha_entrega: '',
         archivo: null,
+        temp_video_path: temp_video_path || null, // Store the temporary video path
     });
+
+    useEffect(() => {
+        if (temp_video_path) {
+            setData('tipo_mensaje', 'video');
+            setData('temp_video_path', temp_video_path);
+        }
+    }, [temp_video_path]);
 
     const submit = (e) => {
         e.preventDefault();
         post(route('mensajes-postumos.store'), {
             onSuccess: () => reset(),
+            forceFormData: true, // Ensure FormData is used for file uploads
         });
     };
 
@@ -59,16 +72,25 @@ export default function Create({ auth }) {
                                     <InputError className="mt-2" message={errors.contenido} />
                                 </div>
 
-                                <div>
-                                    <InputLabel htmlFor="archivo" value="Archivo (Audio/Video)" />
-                                    <input
-                                        id="archivo"
-                                        type="file"
-                                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                        onChange={(e) => setData('archivo', e.target.files[0])}
-                                    />
-                                    <InputError className="mt-2" message={errors.archivo} />
-                                </div>
+                                {data.tipo_mensaje === 'video' && data.temp_video_path && (
+                                    <div className="mt-4">
+                                        <InputLabel value="Previsualización del Video" />
+                                        <video controls src={`/storage/${data.temp_video_path}`} className="mt-1 block w-full max-w-md rounded-md" />
+                                    </div>
+                                )}
+
+                                {data.tipo_mensaje !== 'video' && (
+                                    <div>
+                                        <InputLabel htmlFor="archivo" value="Archivo (Audio/Video)" />
+                                        <input
+                                            id="archivo"
+                                            type="file"
+                                            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                            onChange={(e) => setData('archivo', e.target.files[0])}
+                                        />
+                                        <InputError className="mt-2" message={errors.archivo} />
+                                    </div>
+                                )}
 
                                 <div>
                                     <InputLabel htmlFor="tipo_mensaje" value="Tipo de Mensaje" />

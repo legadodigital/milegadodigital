@@ -14,7 +14,13 @@ class Plan extends Model
         'name',
         'slug',
         'price',
+        'annual_discount_percentage',
         'description',
+    ];
+
+    protected $casts = [
+        'price' => 'decimal:2',
+        'annual_discount_percentage' => 'decimal:2',
     ];
 
     /**

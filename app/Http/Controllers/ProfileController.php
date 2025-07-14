@@ -40,6 +40,7 @@ class ProfileController extends Controller
     {
         $request->validate([
             'plan_id' => ['required', 'exists:plans,id'],
+            'billing_cycle' => ['required', 'in:monthly,annually'],
         ]);
 
         $user = $request->user();
@@ -55,8 +56,9 @@ class ProfileController extends Controller
             $request->session()->put('upgrade_plan_data', [
                 'user_id' => $user->id,
                 'new_plan_id' => $newPlan->id,
+                'billing_cycle' => $request->billing_cycle,
             ]);
-            return Redirect::route('payment.redirect', ['plan_id' => $newPlan->id]);
+            return Redirect::route('payment.redirect', ['plan_id' => $newPlan->id, 'billing_cycle' => $request->billing_cycle]);
         }
     }
 

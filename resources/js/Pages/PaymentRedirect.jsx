@@ -1,26 +1,26 @@
 import React, { useEffect } from 'react';
-import { useForm, Head } from '@inertiajs/react';
-import GuestLayout from '@/Layouts/GuestLayout';
+import { useForm } from '@inertiajs/react';
 
-export default function PaymentRedirect({ plan_id }) {
-    const { post } = useForm({ plan_id: plan_id });
+export default function PaymentRedirect({ plan_id, billing_cycle, csrf_token }) {
+    const { post, processing } = useForm();
 
     useEffect(() => {
-        if (plan_id) {
-            post(route('webpay.initiate'));
+        const form = document.getElementById('payment-form');
+        if (form) {
+            form.submit();
         }
-    }, [plan_id]);
+    }, []);
 
     return (
-        <GuestLayout>
-            <Head title="Redirigiendo al Pago" />
-            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-                <div className="bg-white p-8 rounded-lg shadow-lg text-center max-w-md w-full">
-                    <h1 className="text-2xl font-bold text-gray-800 mb-4">Redirigiendo al proceso de pago...</h1>
-                    <p className="text-gray-600 mb-6">Por favor, espera mientras te conectamos con la pasarela de pago.</p>
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-                </div>
-            </div>
-        </GuestLayout>
+        <div style={{ textAlign: 'center', marginTop: '50px' }}>
+            <h2>Redirigiendo a Transbank...</h2>
+            <p>Por favor, espera mientras te redirigimos a la plataforma de pago segura.</p>
+            <form id="payment-form" action={route('webpay.initiate')} method="POST" style={{ display: 'none' }}>
+                <input type="hidden" name="_token" value={csrf_token} />
+                <input type="hidden" name="plan_id" value={plan_id} />
+                <input type="hidden" name="billing_cycle" value={billing_cycle} />
+            </form>
+            {processing && <p>Procesando...</p>}
+        </div>
     );
 }

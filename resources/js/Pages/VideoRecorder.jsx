@@ -11,6 +11,7 @@ export default function VideoRecorder({ auth }) {
 
     const [isRecording, setIsRecording] = useState(false);
     const [videoURL, setVideoURL] = useState(null);
+    const [tempVideoPath, setTempVideoPath] = useState(null); // New state for temporary video path
     const [remainingTime, setRemainingTime] = useState(videoDurationLimit);
     const videoRef = useRef(null);
     const mediaRecorderRef = useRef(null);
@@ -55,7 +56,7 @@ export default function VideoRecorder({ auth }) {
                     recordedChunksRef.current.push(event.data);
                 }
             };
-            mediaRecorderRef.current.onstop = () => {
+            mediaRecorderRef.current.onstop = async () => {
                 const blob = new Blob(recordedChunksRef.current, {
                     type: 'video/webm'
                 });
@@ -68,6 +69,33 @@ export default function VideoRecorder({ auth }) {
 
                 // Stop all tracks to turn off camera/mic lights
                 stream.getTracks().forEach(track => track.stop());
+
+                // Upload video to temporary storage
+                const formData = new FormData();
+                formData.append('video', blob, 'recorded-video.webm');
+
+                try {
+                    const response = await fetch(route('mensajes-postumos.uploadVideoTemp'), {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        credentials: 'include',
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setTempVideoPath(data.temp_video_path); // Store the temporary path
+                    } else {
+                        console.error('Error uploading video:', response.statusText);
+                        alert('Error al subir el video. Por favor, inténtalo de nuevo.');
+                    }
+                } catch (error) {
+                    console.error('Network error during video upload:', error);
+                    alert('Error de red al subir el video. Por favor, inténtalo de nuevo.');
+                }
             };
 
             mediaRecorderRef.current.start();
@@ -125,6 +153,11 @@ export default function VideoRecorder({ auth }) {
                                     <button onClick={handleDownload} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                                         Descargar Video
                                     </button>
+                                )}
+                                {tempVideoPath && (
+                                    <a href={route('mensajes-postumos.create', { temp_video_path: tempVideoPath })} className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                                        Crear Mensaje Póstumo
+                                    </a>
                                 )}
                             </div>
                         </div>

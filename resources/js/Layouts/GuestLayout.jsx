@@ -19,7 +19,7 @@ export default function GuestLayout({ children }) {
             </div>
 
             <footer className="mt-8 text-center text-gray-500 text-sm relative z-10">
-                &copy; {new Date().getFullYear()} Mi Legado Digital. Todos los derechos reservados.
+                &copy; {new Date().getFullYear()} Mi Legado Virtual. Todos los derechos reservados.
             </footer>
         </div>
     );
