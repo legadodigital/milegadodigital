@@ -67,7 +67,7 @@ class ProfileController extends Controller
      */
     public function showUpgradePlanForm(Request $request): Response
     {
-        $plans = Plan::with('features')->get();
+        $plans = Plan::with('features')->orderBy('price')->get();
         return Inertia::render('Profile/UpgradePlan', [
             'availablePlans' => $plans,
             'currentPlanId' => $request->user()->plan_id,
