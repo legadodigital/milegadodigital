@@ -5,13 +5,33 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import InputError from '@/Components/InputError';
 
 export default function UpgradePlan({ auth, availablePlans, currentPlanId, oneclickInscriptions }) {
-    console.log('Available Plans:', availablePlans);
     const [paymentMethod, setPaymentMethod] = useState('webpay'); // 'webpay' or 'oneclick'
+    const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' or 'annually'
 
     const { data, setData, post, patch, processing, errors } = useForm({
         plan_id: currentPlanId,
         tbk_user: '',
+        billing_cycle: billingCycle,
     });
+
+    // Update form data when billingCycle changes
+    React.useEffect(() => {
+        setData('billing_cycle', billingCycle);
+    }, [billingCycle]);
+
+    const calculatePrice = (plan) => {
+        if (plan.price === '0.00') return 'Gratis';
+
+        const monthlyPrice = parseFloat(plan.price);
+        if (billingCycle === 'monthly') {
+            return `${monthlyPrice.toFixed(2)}/mes`;
+        } else {
+            const annualPriceBeforeDiscount = monthlyPrice * 12;
+            const discountAmount = annualPriceBeforeDiscount * (parseFloat(plan.annual_discount_percentage) / 100);
+            const annualPriceAfterDiscount = annualPriceBeforeDiscount - discountAmount;
+            return `${annualPriceAfterDiscount.toFixed(2)}/año (Ahorra ${plan.annual_discount_percentage}%)`;
+        }
+    };
 
     const featureTranslations = {
         max_messages: 'Cantidad de Mensajes',
@@ -28,6 +48,7 @@ export default function UpgradePlan({ auth, availablePlans, currentPlanId, onecl
         if (selectedPlan && selectedPlan.price > 0) {
             if (paymentMethod === 'webpay') {
                 patch(route('profile.updatePlan'), {
+                    data: { ...data, billing_cycle: billingCycle },
                     onSuccess: () => {
                         console.log('Patch request successful for Webpay!');
                         // Inertia should handle the redirect from the server
@@ -38,6 +59,7 @@ export default function UpgradePlan({ auth, availablePlans, currentPlanId, onecl
                 });
             } else if (paymentMethod === 'oneclick') {
                 post(route('oneclick.payment'), {
+                    data: { ...data, billing_cycle: billingCycle },
                     onSuccess: () => {
                         console.log('Post request successful for Oneclick!');
                     },
@@ -49,6 +71,7 @@ export default function UpgradePlan({ auth, availablePlans, currentPlanId, onecl
         } else {
             // Free plan, update directly
             patch(route('profile.updatePlan'), {
+                data: { ...data, billing_cycle: billingCycle },
                 onSuccess: () => {
                     console.log('Patch request successful for free plan!');
                 },
@@ -79,19 +102,45 @@ export default function UpgradePlan({ auth, availablePlans, currentPlanId, onecl
                                     name="plan_id"
                                     value={data.plan_id}
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    onChange={(e) => setData('plan_id', e.target.value)}
+                                    onChange={(e) => setData('plan_id', parseInt(e.target.value))}
                                 >
                                     {availablePlans.map((plan) => (
                                         <option key={plan.id} value={plan.id}>
-                                            {plan.name} {plan.price > 0 ? `(${plan.price}/mes)` : '(Gratis)'}
+                                            {plan.name} {plan.price > 0 ? `(${calculatePrice(plan)})` : '(Gratis)'}
                                         </option>
                                     ))}
                                 </select>
                                 <InputError message={errors.plan_id} className="mt-2" />
-                            </div>
+                        </div>
 
-                            {availablePlans.find(plan => plan.id === data.plan_id && plan.price > 0) && (
-                                <div className="mb-4">
+                        {availablePlans.find(plan => plan.id === data.plan_id && plan.price > 0) && (
+                            <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Frecuencia de Pago:</label>
+                                    <div className="flex items-center space-x-4 mb-4">
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="form-radio"
+                                                name="billing_cycle"
+                                                value="monthly"
+                                                checked={billingCycle === 'monthly'}
+                                                onChange={() => setBillingCycle('monthly')}
+                                            />
+                                            <span className="ml-2 text-gray-700">Mensual</span>
+                                        </label>
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="form-radio"
+                                                name="billing_cycle"
+                                                value="annually"
+                                                checked={billingCycle === 'annually'}
+                                                onChange={() => setBillingCycle('annually')}
+                                            />
+                                            <span className="ml-2 text-gray-700">Anual (con descuento)</span>
+                                        </label>
+                                    </div>
+
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Método de Pago:</label>
                                     <div className="flex items-center space-x-4">
                                         <label className="inline-flex items-center">
@@ -156,6 +205,14 @@ export default function UpgradePlan({ auth, availablePlans, currentPlanId, onecl
                                     <div key={plan.id} className="border rounded-lg p-4 shadow-sm">
                                         <h5 className="text-xl font-bold mb-2">{plan.name}</h5>
                                         <p className="text-gray-600 mb-4">{plan.description}</p>
+                                        {plan.price > 0 && (
+                                            <p className="text-gray-800 font-semibold mb-2">Mensual: ${parseFloat(plan.price).toFixed(2)}/mes</p>
+                                        )}
+                                        {plan.price > 0 && parseFloat(plan.annual_discount_percentage) > 0 && (
+                                            <p className="text-gray-800 font-semibold mb-4">
+                                                Anual: ${((parseFloat(plan.price) * 12) * (1 - parseFloat(plan.annual_discount_percentage) / 100)).toFixed(2)}/año (Ahorra {parseFloat(plan.annual_discount_percentage).toFixed(0)}%)
+                                            </p>
+                                        )}
                                         <ul className="space-y-2">
                                             {plan.features.map((feature) => {
                                                 let displayValue = feature.value;

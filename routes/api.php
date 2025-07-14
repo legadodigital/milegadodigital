@@ -28,14 +28,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::apiResource('mensajes-postumos', MensajePostumoController::class);
+    Route::apiResource('mensajes-postumos', MensajePostumoController::class)->names('api.mensajes-postumos');
 
-    Route::apiResource('documentos-importantes', DocumentoImportanteController::class);
-    Route::get('documentos-importantes/{documentoImportante}/download', [DocumentoImportanteController::class, 'download']);
+    Route::apiResource('documentos-importantes', DocumentoImportanteController::class)->names('api.documentos-importantes');
+    Route::get('documentos-importantes/{documentoImportante}/download', [DocumentoImportanteController::class, 'download'])->name('api.documentos-importantes.download');
 
-    Route::apiResource('contactos-confianza', ContactoConfianzaController::class);
+    Route::apiResource('contactos-confianza', ContactoConfianzaController::class)->names('api.contactos-confianza');
 
-    Route::apiResource('recuerdos', RecuerdoController::class);
+    Route::apiResource('recuerdos', RecuerdoController::class)->names('api.recuerdos');
 });
 
 Route::post('/register', [AuthController::class, 'register']);

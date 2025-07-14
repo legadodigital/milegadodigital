@@ -67,7 +67,12 @@ export default function Edit({ auth, mensaje }) {
                                         onChange={(e) => setData('archivo', e.target.files[0])}
                                     />
                                     <InputError className="mt-2" message={errors.archivo} />
-                                    {mensaje.ruta_archivo && (
+                                    {mensaje.ruta_archivo && mensaje.tipo_archivo_media === 'video' && (
+                                        <div className="mt-2">
+                                            <video controls src={`/storage/${mensaje.ruta_archivo}`} className="w-full max-w-md rounded-md" />
+                                        </div>
+                                    )}
+                                    {mensaje.ruta_archivo && mensaje.tipo_archivo_media !== 'video' && (
                                         <p className="mt-2 text-sm text-gray-600">
                                             Archivo actual: <a href={`/storage/${mensaje.ruta_archivo}`} target="_blank" className="text-blue-500 hover:underline">Ver archivo</a>
                                         </p>

@@ -47,6 +47,7 @@ class MensajePostumoController extends Controller
             'destinatario_nombre' => 'nullable|string|max:255',
             'fecha_entrega' => 'required|date',
             'archivo' => 'nullable|file|mimes:mp4,mov,ogg,qt,mp3,wav,aac|max:204800', // 200MB max
+            'temp_video_path' => 'nullable|string',
         ]);
 
         $rutaArchivo = null;
@@ -56,6 +57,16 @@ class MensajePostumoController extends Controller
             $file = $request->file('archivo');
             $rutaArchivo = $file->store('mensajes_postumos', 'public');
             $tipoArchivoMedia = $this->getMediaType($file->getMimeType());
+        } elseif ($request->filled('temp_video_path')) {
+            $tempPath = $request->input('temp_video_path');
+            // Ensure the file exists in temp storage
+            if (Storage::disk('public')->exists($tempPath)) {
+                $fileName = basename($tempPath);
+                $newPath = 'mensajes_postumos/' . $fileName;
+                Storage::disk('public')->move($tempPath, $newPath);
+                $rutaArchivo = $newPath;
+                $tipoArchivoMedia = $this->getMediaType(Storage::disk('public')->mimeType($newPath));
+            }
         }
 
         MensajePostumo::create([
@@ -131,6 +142,19 @@ class MensajePostumoController extends Controller
         ]);
 
         return redirect()->route('mensajes-postumos.index')->with('success', 'Mensaje póstumo actualizado exitosamente.');
+    }
+
+    public function uploadVideoTemp(Request $request)
+    {
+        $request->validate([
+            'video' => 'required|file|mimetypes:video/*|max:204800', // Max 200MB (204800 KB)
+        ]);
+
+        $path = $request->file('video')->store('temp/videos', 'public');
+
+        return response()->json([
+            'temp_video_path' => $path,
+        ]);
     }
 
     /**

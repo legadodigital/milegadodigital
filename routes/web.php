@@ -29,7 +29,12 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/payment-redirect', function (Request $request) {
     $planId = $request->query('plan_id');
-    return Inertia::render('PaymentRedirect', ['plan_id' => $planId]);
+    $billingCycle = $request->query('billing_cycle', 'monthly'); // Default to monthly if not provided
+    return Inertia::render('PaymentRedirect', [
+        'plan_id' => $planId,
+        'billing_cycle' => $billingCycle,
+        'csrf_token' => csrf_token(),
+    ]);
 })->name('payment.redirect');
 
 Route::post('/webpay/initiate', [App\Http\Controllers\TransbankController::class, 'initiateWebpayTransaction'])->name('webpay.initiate');
@@ -65,17 +70,25 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/upgrade-plan', [ProfileController::class, 'showUpgradePlanForm'])->name('profile.upgradePlanForm');
     Route::get('/profile/oneclick', [ProfileController::class, 'showOneclickManagement'])->name('profile.oneclick');
 
+    // Rutas para Historial de Pagos
+    Route::get('/payments', [App\Http\Controllers\PaymentController::class, 'index'])->name('payments.index');
+
     // Rutas para Configuración de Seguridad
     Route::get('/seguridad', [ProfileController::class, 'security'])->name('profile.security');
     Route::patch('/seguridad', [ProfileController::class, 'updateSecurity'])->name('profile.updateSecurity');
 
     // Rutas para Mensajes Póstumos
     Route::get('/mensajes-postumos', [MensajePostumoController::class, 'index'])->name('mensajes-postumos.index');
-    Route::get('/mensajes-postumos/crear', [MensajePostumoController::class, 'create'])->name('mensajes-postumos.create');
+    Route::get('/mensajes-postumos/crear', function (Request $request) {
+        return Inertia::render('MensajesPostumos/Create', [
+            'temp_video_path' => $request->query('temp_video_path'),
+        ]);
+    })->name('mensajes-postumos.create');
     Route::post('/mensajes-postumos', [MensajePostumoController::class, 'store'])->name('mensajes-postumos.store');
     Route::get('/mensajes-postumos/{mensajePostumo}/editar', [MensajePostumoController::class, 'edit'])->name('mensajes-postumos.edit');
     Route::put('/mensajes-postumos/{mensajePostumo}', [MensajePostumoController::class, 'update'])->name('mensajes-postumos.update');
     Route::delete('/mensajes-postumos/{mensajePostumo}', [MensajePostumoController::class, 'destroy'])->name('mensajes-postumos.destroy');
+    Route::post('/mensajes-postumos/upload-video-temp', [MensajePostumoController::class, 'uploadVideoTemp'])->name('mensajes-postumos.uploadVideoTemp');
 
     // Rutas para Documentos Importantes
     Route::get('/documentos-importantes', [DocumentoImportanteController::class, 'index'])->name('documentos-importantes.index');

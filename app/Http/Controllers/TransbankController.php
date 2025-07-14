@@ -9,6 +9,7 @@ use Transbank\Webpay\Oneclick\MallTransaction;
 use App\Models\Plan;
 use App\Models\User;
 use App\Models\OneclickInscription;
+use App\Models\Payment; // Add this line
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
@@ -21,10 +22,16 @@ class TransbankController extends Controller
     {
         $request->validate([
             'plan_id' => 'required|exists:plans,id',
+            'billing_cycle' => 'required|in:monthly,annually',
         ]);
 
         $plan = Plan::findOrFail($request->plan_id);
         $amount = $plan->price;
+
+        if ($request->billing_cycle === 'annually') {
+            $amount = ($amount * 12) * (1 - $plan->annual_discount_percentage / 100);
+        }
+
         $buyOrder = 'order-' . uniqid();
         $sessionId = 'session-' . uniqid();
         $returnUrl = route('webpay.return');
@@ -63,9 +70,73 @@ class TransbankController extends Controller
         $token = $request->get('token_ws');
         $response = $tx->commit($token);
 
-        if ($response->isApproved()) {
-            $registrationData = $request->session()->get('registration_data');
+        $registrationData = $request->session()->get('registration_data');
+        $upgradePlanData = $request->session()->get('upgrade_plan_data');
 
+        $userId = null;
+        $planId = null;
+        $billingCycle = null;
+
+        if ($registrationData) {
+            $userId = null; // User not created yet, will be created after successful payment
+            $planId = $registrationData['plan_id'];
+            $billingCycle = $registrationData['billing_cycle'];
+        } else if ($upgradePlanData) {
+            $userId = $upgradePlanData['user_id'];
+            $planId = $upgradePlanData['new_plan_id'];
+            $billingCycle = $upgradePlanData['billing_cycle'];
+        } else if (Auth::check()) {
+            $userId = Auth::id();
+            // Try to get plan_id from the request if it's an existing user making a payment not related to upgrade/registration
+            $planId = $request->input('plan_id');
+            $billingCycle = $request->input('billing_cycle', 'monthly'); // Default to monthly if not provided
+        }
+
+        // Ensure we have a user ID for the payment record
+        if (!$userId && $response->isApproved() && $registrationData) {
+            // If it's a new registration and payment is approved, the user will be created soon.
+            // We'll need to update this payment record with the user_id after user creation.
+            // For now, we can leave user_id as null or try to find the user by email if already created.
+            // For simplicity, let's assume user is created right after this block for registration flow.
+            // Or, we can pass the user_id from the session if it's an upgrade.
+            // Let's refine this: if registrationData, user is created AFTER this, so we need to handle it there.
+            // For now, we'll assume userId is available for upgrade or existing user payments.
+            // For new registrations, we'll update the payment record after user creation.
+        }
+
+        // Log the payment attempt/result
+        $payment = Payment::create([
+            'user_id' => $userId, // Will be null for new registrations, updated later
+            'plan_id' => $planId,
+            'billing_cycle' => $billingCycle,
+            'amount' => $response->getAmount(),
+            'buy_order' => $response->getBuyOrder(),
+            'session_id' => $response->getSessionId(),
+            'token_ws' => $token,
+            'status' => $response->isApproved() ? 'approved' : 'rejected',
+            'transbank_response' => json_encode([
+                'vci' => $response->getVci(),
+                'status' => $response->getStatus(),
+                'response_code' => $response->getResponseCode(),
+                'amount' => $response->getAmount(),
+                'authorization_code' => $response->getAuthorizationCode(),
+                'payment_type_code' => $response->getPaymentTypeCode(),
+                'accounting_date' => $response->getAccountingDate(),
+                'installments_number' => $response->getInstallmentsNumber(),
+                'installments_amount' => $response->getInstallmentsAmount(),
+                'session_id' => $response->getSessionId(),
+                'buy_order' => $response->getBuyOrder(),
+                'card_number' => $response->getCardNumber(),
+                'card_detail' => $response->getCardDetail(),
+                'transaction_date' => $response->getTransactionDate(),
+                'balance' => $response->getBalance(),
+            ]),
+            'payment_method' => 'webpay',
+            'card_number' => $response->getCardNumber(),
+            'transaction_date' => now(),
+        ]);
+
+        if ($response->isApproved()) {
             if ($registrationData) {
                 $user = User::create([
                     'name' => $registrationData['name'],
@@ -80,11 +151,15 @@ class TransbankController extends Controller
 
                 $request->session()->forget('registration_data');
 
+                // Update the payment record with the newly created user_id
+                $payment->user_id = $user->id;
+                $payment->save();
+
                 return Inertia::render('PaymentSuccess', [
                     'message' => '¡Pago exitoso! Tu plan ha sido activado y tu cuenta creada.',
                     'response' => $response,
                 ]);
-            } else if ($upgradePlanData = $request->session()->get('upgrade_plan_data')) {
+            } else if ($upgradePlanData) {
                 $user = User::find($upgradePlanData['user_id']);
                 if ($user) {
                     $user->plan_id = $upgradePlanData['new_plan_id'];
@@ -153,11 +228,18 @@ class TransbankController extends Controller
         $request->validate([
             'plan_id' => 'required|exists:plans,id',
             'tbk_user' => 'required|string',
+            'billing_cycle' => 'required|in:monthly,annually', // Add billing_cycle validation
         ]);
 
         $user = $request->user();
         $plan = Plan::findOrFail($request->plan_id);
         $amount = $plan->price;
+
+        // Apply annual discount if billing_cycle is annually
+        if ($request->billing_cycle === 'annually') {
+            $amount = ($amount * 12) * (1 - $plan->annual_discount_percentage / 100);
+        }
+
         $buyOrder = 'order-' . uniqid();
         $tbkUser = $request->tbk_user;
         $childCommerceCode = config('transbank.oneclick_child_commerce_code'); // Define this in config/services.php
@@ -180,6 +262,22 @@ class TransbankController extends Controller
             );
 
             if ($response->isApproved()) {
+                // Create a payment record for Oneclick payment
+                Payment::create([
+                    'user_id' => $user->id,
+                    'plan_id' => $plan->id,
+                    'billing_cycle' => $request->billing_cycle,
+                    'amount' => $amount,
+                    'buy_order' => $buyOrder,
+                    'session_id' => $sessionId,
+                    'token_ws' => null, // Not applicable for Oneclick payment
+                    'status' => 'approved',
+                    'transbank_response' => json_encode($response->jsonSerialize()),
+                    'payment_method' => 'oneclick',
+                    'card_number' => $response->getCardNumber(),
+                    'transaction_date' => now(),
+                ]);
+
                 $user->plan_id = $plan->id;
                 $user->save();
 
