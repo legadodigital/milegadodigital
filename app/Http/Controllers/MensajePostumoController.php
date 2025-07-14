@@ -46,7 +46,7 @@ class MensajePostumoController extends Controller
             'destinatario_email' => 'required|email',
             'destinatario_nombre' => 'nullable|string|max:255',
             'fecha_entrega' => 'required|date',
-            'archivo' => 'nullable|file|mimes:jpeg,png,gif,bmp,svg,webp,mp4,mov,ogg,qt,mp3,wav,aac|max:204800', // 200MB max
+            'archivo' => 'nullable|file|mimes:jpeg,png,gif,bmp,svg,webp,mp4,mov,ogg,qt,mp3,wav,aac|max:20480', // 20MB max
             'temp_video_path' => 'nullable|string',
         ]);
 
@@ -114,7 +114,7 @@ class MensajePostumoController extends Controller
             'destinatario_email' => 'required|email',
             'destinatario_nombre' => 'nullable|string|max:255',
             'fecha_entrega' => 'required|date',
-            'archivo' => 'nullable|file|mimes:jpeg,png,gif,bmp,svg,webp,mp4,mov,ogg,qt,mp3,wav,aac|max:204800', // 200MB max
+            'archivo' => 'nullable|file|mimes:jpeg,png,gif,bmp,svg,webp,mp4,mov,ogg,qt,mp3,wav,aac|max:20480', // 20MB max
         ]);
 
         $rutaArchivo = $mensajePostumo->ruta_archivo;
@@ -147,7 +147,7 @@ class MensajePostumoController extends Controller
     public function uploadVideoTemp(Request $request)
     {
         $request->validate([
-            'video' => 'required|file|mimetypes:video/*|max:204800', // Max 200MB (204800 KB)
+            'video' => 'required|file|mimetypes:video/*|max:20480', // Max 20MB (20480 KB)
         ]);
 
         $path = $request->file('video')->store('temp/videos', 'public');

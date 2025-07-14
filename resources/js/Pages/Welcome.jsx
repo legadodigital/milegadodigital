@@ -8,6 +8,7 @@ export default function Welcome({ auth, plans }) {
         video_recording: 'Grabación de Video',
         video_duration: 'Duración de Video (segundos)',
         max_trusted_contacts: 'Contactos de Confianza',
+        max_memories: 'Recuerdos',
     };
 
     return (
@@ -150,14 +151,19 @@ export default function Welcome({ auth, plans }) {
 
                     {/* Quienes Somos Section */}
                     <section id="quienes-somos" className="py-16 bg-calm-green-50 text-gray-800">
-                        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-                            <h2 className="text-4xl font-bold mb-8">Quienes Somos</h2>
-                            <p className="text-lg leading-relaxed max-w-3xl mx-auto">
-                                Somos un equipo apasionado por la preservación de la memoria y el legado personal. Creemos que cada vida es una historia que merece ser contada y recordada. Nuestra misión es proporcionar una plataforma segura y accesible para que las personas puedan organizar y compartir sus recuerdos más preciados, mensajes y documentos importantes con sus seres queridos, asegurando que su influencia perdure a través del tiempo.
-                            </p>
-                            <p className="text-lg leading-relaxed mt-4 max-w-3xl mx-auto">
-                                En Mi Legado Virtual, combinamos tecnología innovadora con un profundo respeto por la privacidad y la seguridad. Nos esforzamos por crear una experiencia intuitiva y significativa, permitiendo a nuestros usuarios construir un legado Virtual duradero que trascienda generaciones.
-                            </p>
+                        <div className="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                            <div className="text-center md:text-left">
+                                <h2 className="text-4xl font-bold mb-8">Quienes Somos</h2>
+                                <p className="text-lg leading-relaxed max-w-3xl mx-auto md:mx-0">
+                                    Somos un equipo apasionado por la preservación de la memoria y el legado personal. Creemos que cada vida es una historia que merece ser contada y recordada. Nuestra misión es proporcionar una plataforma segura y accesible para que las personas puedan organizar y compartir sus recuerdos más preciados, mensajes y documentos importantes con sus seres queridos, asegurando que su influencia perdure a través del tiempo.
+                                </p>
+                                <p className="text-lg leading-relaxed mt-4 max-w-3xl mx-auto md:mx-0">
+                                    En Mi Legado Virtual, combinamos tecnología innovadora con un profundo respeto por la privacidad y la seguridad. Nos esforzamos por crear una experiencia intuitiva y significativa, permitiendo a nuestros usuarios construir un legado Virtual duradero que trascienda generaciones.
+                                </p>
+                            </div>
+                            <div className="flex justify-center md:justify-end">
+                                <img src="/img/logonaombre.png" alt="Mi Legado Virtual Logo" className="max-w-full h-auto opacity-70" style={{ maxWidth: '500px' }} />
+                            </div>
                         </div>
                     </section>
 
@@ -216,7 +222,7 @@ export default function Welcome({ auth, plans }) {
                                 {plans.map((plan) => (
                                     <div key={plan.id} className="bg-white p-8 rounded-lg shadow-lg flex flex-col transform transition duration-300 hover:scale-105">
                                         <h3 className="text-2xl font-bold mb-4 text-calm-green-600">{plan.name}</h3>
-                                        <p className="text-4xl font-extrabold mb-4">$UF {plan.price}<span className="text-lg font-medium text-gray-600">/mes</span></p>
+                                        <p className="text-4xl font-extrabold mb-4">$ {plan.price} CLP<span className="text-lg font-medium text-gray-600">/mes</span></p>
                                         <p className="text-gray-600 mb-6 flex-grow">{plan.description}</p>
                                         <ul className="mb-6 space-y-3">
                                             {plan.features.map((feature) => {
@@ -265,6 +271,14 @@ export default function Welcome({ auth, plans }) {
                                                         displayValue = `${feature.value} contactos`;
                                                     }
                                                 }
+                                                else if (feature.feature_code === 'max_memories') {
+                                                    if (parseInt(feature.value, 10) === 0) {
+                                                        displayValue = 'No disponible';
+                                                        isUnavailable = true;
+                                                    } else {
+                                                        displayValue = `${feature.value} `;
+                                                    }
+                                                }
 
                                                 return (
                                                     <li key={feature.id} className="flex items-center text-gray-700">
@@ -306,14 +320,14 @@ export default function Welcome({ auth, plans }) {
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                     </svg>
-                                    info@legadoVirtual.cl
+                                    soporte@legadovirtual.cl
                                 </a>
-                                <a href="tel:+1234567890" className="text-calm-green-600 hover:text-calm-green-800 text-lg font-semibold flex items-center transition duration-300">
+                                {/* <a href="tel:+1234567890" className="text-calm-green-600 hover:text-calm-green-800 text-lg font-semibold flex items-center transition duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.135a11.042 11.042 0 005.516 5.516l1.135-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2H5a2 2 0 01-2-2V5z" />
                                     </svg>
                                     +56 9 1234 5678
-                                </a>
+                                </a> */}
                             </div>
                         </div>
                     </section>

@@ -111,6 +111,7 @@ export default function Create({ auth }) {
                                         onChange={handleFileChange}
                                     />
                                     <InputError className="mt-2" message={errors.archivos} />
+                                    <p className="mt-2 text-sm text-gray-600">Formatos permitidos: Imágenes (JPG, PNG, GIF), Audio (MP3, WAV, AAC). Tamaño máximo: 20MB.</p>
                                 </div>
 
                                 <div className="flex items-center gap-4">
