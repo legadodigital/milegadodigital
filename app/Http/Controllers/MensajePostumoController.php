@@ -46,7 +46,7 @@ class MensajePostumoController extends Controller
             'destinatario_email' => 'required|email',
             'destinatario_nombre' => 'nullable|string|max:255',
             'fecha_entrega' => 'required|date',
-            'archivo' => 'nullable|file|mimes:mp4,mov,ogg,qt,mp3,wav,aac|max:204800', // 200MB max
+            'archivo' => 'nullable|file|mimes:jpeg,png,gif,bmp,svg,webp,mp4,mov,ogg,qt,mp3,wav,aac|max:204800', // 200MB max
             'temp_video_path' => 'nullable|string',
         ]);
 
@@ -114,7 +114,7 @@ class MensajePostumoController extends Controller
             'destinatario_email' => 'required|email',
             'destinatario_nombre' => 'nullable|string|max:255',
             'fecha_entrega' => 'required|date',
-            'archivo' => 'nullable|file|mimes:mp4,mov,ogg,qt,mp3,wav,aac|max:204800', // 200MB max
+            'archivo' => 'nullable|file|mimes:jpeg,png,gif,bmp,svg,webp,mp4,mov,ogg,qt,mp3,wav,aac|max:204800', // 200MB max
         ]);
 
         $rutaArchivo = $mensajePostumo->ruta_archivo;
