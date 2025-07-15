@@ -12,7 +12,7 @@ export default function Edit({ auth, mensaje }) {
         tipo_mensaje: mensaje.tipo_mensaje,
         destinatario_email: mensaje.destinatario_email,
         destinatario_nombre: mensaje.destinatario_nombre || '',
-        fecha_entrega: mensaje.fecha_entrega ? format(new Date(mensaje.fecha_entrega), 'yyyy-MM-dd\'T\'HH:mm') : ''
+        fecha_entrega: mensaje.fecha_entrega ? format(new Date(mensaje.fecha_entrega), 'yyyy-MM-dd\'T\'HH:mm') : '',
         archivo: null,
         _method: 'put',
     });
