@@ -139,7 +139,16 @@ export default function Create({ auth }) {
                                         type="datetime-local"
                                         className="mt-1 block w-full"
                                         value={data.fecha_entrega}
-                                        onChange={(e) => setData('fecha_entrega', e.target.value)}
+                                        onChange={(e) => {
+                                            const localDateTimeString = e.target.value;
+                                            if (localDateTimeString) {
+                                                const localDate = new Date(localDateTimeString);
+                                                const utcDateString = localDate.toISOString();
+                                                setData('fecha_entrega', utcDateString);
+                                            } else {
+                                                setData('fecha_entrega', '');
+                                            }
+                                        }}
                                         required
                                     />
                                     <InputError className="mt-2" message={errors.fecha_entrega} />
