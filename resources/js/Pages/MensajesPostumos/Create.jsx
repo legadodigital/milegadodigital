@@ -1,39 +1,45 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm, usePage } from "@inertiajs/react";
+import { Head, useForm } from "@inertiajs/react";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
 import { useEffect } from "react";
-import { format } from "date-fns";
 
 export default function Create({ auth }) {
-    const { props } = usePage();
-    const { temp_video_path } = props;
-
     const { data, setData, post, processing, errors, reset } = useForm({
         titulo: "",
         contenido: "",
-        tipo_mensaje: temp_video_path ? "video" : "texto",
+        tipo_mensaje: "texto",
         destinatario_email: "",
         destinatario_nombre: "",
         fecha_entrega: "",
         archivo: null,
-        temp_video_path: temp_video_path || null, // Store the temporary video path
+        temp_video_path: null,
     });
 
     useEffect(() => {
-        if (temp_video_path) {
+        if (data.temp_video_path) {
             setData("tipo_mensaje", "video");
-            setData("temp_video_path", temp_video_path);
         }
-    }, [temp_video_path]);
+    }, [data.temp_video_path]);
 
     const submit = (e) => {
         e.preventDefault();
+
+        // Preparar payload
+        const payload = { ...data };
+
+        // Convertir fecha_entrega a ISO UTC solo antes de enviar
+        if (payload.fecha_entrega) {
+            const localDate = new Date(payload.fecha_entrega);
+            payload.fecha_entrega = localDate.toISOString();
+        }
+
         post(route("mensajes-postumos.store"), {
+            data: payload,
             onSuccess: () => reset(),
-            forceFormData: true, // Ensure FormData is used for file uploads
+            forceFormData: true,
         });
     };
 
@@ -47,7 +53,6 @@ export default function Create({ auth }) {
             }
         >
             <Head title="Crear Mensaje Póstumo" />
-
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -58,10 +63,7 @@ export default function Create({ auth }) {
                                 encType="multipart/form-data"
                             >
                                 <div>
-                                    <InputLabel
-                                        htmlFor="titulo"
-                                        value="Título"
-                                    />
+                                    <InputLabel htmlFor="titulo" value="Título" />
                                     <TextInput
                                         id="titulo"
                                         className="mt-1 block w-full"
@@ -220,39 +222,13 @@ export default function Create({ auth }) {
                                         id="fecha_entrega"
                                         type="datetime-local"
                                         className="mt-1 block w-full"
-                                        value={(() => {
-                                            const formattedValue =
-                                                data.fecha_entrega
-                                                    ? format(
-                                                          new Date(
-                                                              data.fecha_entrega
-                                                          ),
-                                                          "yyyy-MM-dd'T'HH:mm"
-                                                      )
-                                                    : "";
-                                            console.log(
-                                                "Create.jsx - fecha_entrega value for input:",
-                                                formattedValue
-                                            );
-                                            return formattedValue;
-                                        })()}
-                                        onChange={(e) => {
-                                            const localDateTimeString =
-                                                e.target.value;
-                                            if (localDateTimeString) {
-                                                const localDate = new Date(
-                                                    localDateTimeString
-                                                );
-                                                const utcDateString =
-                                                    localDate.toISOString();
-                                                setData(
-                                                    "fecha_entrega",
-                                                    utcDateString
-                                                );
-                                            } else {
-                                                setData("fecha_entrega", "");
-                                            }
-                                        }}
+                                        value={data.fecha_entrega}
+                                        onChange={(e) =>
+                                            setData(
+                                                "fecha_entrega",
+                                                e.target.value
+                                            )
+                                        }
                                         required
                                     />
                                     <InputError
