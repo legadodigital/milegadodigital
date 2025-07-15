@@ -5,6 +5,8 @@ import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
 import { useEffect } from "react";
+import { format, parseISO, parse } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default function Create({ auth }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -27,17 +29,7 @@ export default function Create({ auth }) {
     const submit = (e) => {
         e.preventDefault();
 
-        // Preparar payload
-        const payload = { ...data };
-
-        // Convertir fecha_entrega a ISO UTC solo antes de enviar
-        if (payload.fecha_entrega) {
-            const localDate = new Date(payload.fecha_entrega);
-            payload.fecha_entrega = localDate.toISOString();
-        }
-
         post(route("mensajes-postumos.store"), {
-            data: payload,
             onSuccess: () => reset(),
             forceFormData: true,
         });
@@ -222,13 +214,8 @@ export default function Create({ auth }) {
                                         id="fecha_entrega"
                                         type="datetime-local"
                                         className="mt-1 block w-full"
-                                        value={data.fecha_entrega}
-                                        onChange={(e) =>
-                                            setData(
-                                                "fecha_entrega",
-                                                e.target.value
-                                            )
-                                        }
+                                        value={data.fecha_entrega ? format(new Date(data.fecha_entrega),  'yyyy-MM-dd\'T\'HH:mm') : ''}
+                                        onChange={(e) => setData("fecha_entrega", e.target.value)}
                                         required
                                     />
                                     <InputError
