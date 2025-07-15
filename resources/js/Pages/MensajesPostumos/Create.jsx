@@ -138,7 +138,7 @@ export default function Create({ auth }) {
                                         id="fecha_entrega"
                                         type="datetime-local"
                                         className="mt-1 block w-full"
-                                        value={data.fecha_entrega}
+                                        value={data.fecha_entrega ? format(new Date(data.fecha_entrega), 'yyyy-MM-dd\'T\'HH:mm') : ''}
                                         onChange={(e) => {
                                             const localDateTimeString = e.target.value;
                                             if (localDateTimeString) {
