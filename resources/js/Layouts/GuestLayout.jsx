@@ -1,5 +1,6 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import { Link } from '@inertiajs/react';
+import CookieConsent from '@/Components/CookieConsent';
 
 export default function GuestLayout({ children }) {
     return (
@@ -21,6 +22,7 @@ export default function GuestLayout({ children }) {
             <footer className="mt-8 text-center text-gray-500 text-sm relative z-10">
                 &copy; {new Date().getFullYear()} Mi Legado Virtual. Todos los derechos reservados.
             </footer>
+            <CookieConsent />
         </div>
     );
 }
