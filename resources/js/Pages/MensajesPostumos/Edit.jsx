@@ -25,7 +25,7 @@ export default function Edit({ auth, mensaje }) {
                   const minutes = String(date.getMinutes()).padStart(2, "0");
 
                   const formattedValue = `${year}-${month}-${day}T${hours}:${minutes}`;
-                  console.log("Edit.jsx - fecha_entrega initial value:", formattedValue);
+
                   return formattedValue;
               })()
             : "",
