@@ -92,7 +92,7 @@ export default function Index({ auth, mensajes }) {
                                                     <td className="py-2 px-4 border-b">{mensaje.tipo_mensaje}</td>
                                                     <td className="py-2 px-4 border-b">{mensaje.destinatario_email}</td>
                                                     <td className="py-2 px-4 border-b">
-                                                        {format(new Date(mensaje.fecha_entrega), 'dd/MM/yyyy HH:mm')}
+                                                        {format(new Date(mensaje.fecha_entrega + 'Z'), 'dd/MM/yyyy HH:mm')}
                                                     </td>
                                                     <td className="py-2 px-4 border-b">{mensaje.estado}</td>
                                                     <td className="py-2 px-4 border-b">
