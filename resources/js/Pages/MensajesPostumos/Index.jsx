@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { format } from 'date-fns';
+import { format, parseISO, parse } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { useState } from 'react';
 
 export default function Index({ auth, mensajes }) {
@@ -92,7 +93,7 @@ export default function Index({ auth, mensajes }) {
                                                     <td className="py-2 px-4 border-b">{mensaje.tipo_mensaje}</td>
                                                     <td className="py-2 px-4 border-b">{mensaje.destinatario_email}</td>
                                                     <td className="py-2 px-4 border-b">
-                                                        {mensaje.fecha_entrega ? format(new Date(mensaje.fecha_entrega), 'dd/MM/yyyy HH:mm') : 'N/A'}
+                                                        {mensaje.fecha_entrega ? mensaje.fecha_entrega.substring(0, 16).replace('T', ' ') : 'N/A'}
                                                     </td>
                                                     <td className="py-2 px-4 border-b">{mensaje.estado}</td>
                                                     <td className="py-2 px-4 border-b">

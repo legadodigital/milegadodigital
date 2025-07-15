@@ -4,26 +4,10 @@ import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
-import { format } from "date-fns";
+import { format, parseISO, parse } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default function Edit({ auth, mensaje }) {
-    // Función auxiliar para convertir una fecha UTC a formato local (yyyy-MM-dd'T'HH:mm)
-    const utcToLocalISOString = (utcDateString) => {
-        const date = new Date(utcDateString);
-
-        if (isNaN(date.getTime())) {
-            console.error("Fecha inválida:", utcDateString);
-            return "";
-        }
-
-        const year = String(date.getFullYear()).padStart(4, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0"); // getMonth es 0-based
-        const day = String(date.getDate()).padStart(2, "0");
-        const hours = String(date.getHours()).padStart(2, "0");
-        const minutes = String(date.getMinutes()).padStart(2, "0");
-
-        return `${year}-${month}-${day}T${hours}:${minutes}`;
-    };
 
     const { data, setData, post, processing, errors } = useForm({
         titulo: mensaje.titulo,
@@ -31,9 +15,7 @@ export default function Edit({ auth, mensaje }) {
         tipo_mensaje: mensaje.tipo_mensaje,
         destinatario_email: mensaje.destinatario_email,
         destinatario_nombre: mensaje.destinatario_nombre || "",
-        fecha_entrega: mensaje.fecha_entrega
-            ? utcToLocalISOString(mensaje.fecha_entrega)
-            : "",
+        fecha_entrega: mensaje.fecha_entrega ? mensaje.fecha_entrega.substring(0, 16).replace(' ', 'T') : '',
         archivo: null,
         _method: "put",
     });
@@ -42,12 +24,6 @@ export default function Edit({ auth, mensaje }) {
         e.preventDefault();
 
         let payload = { ...data };
-
-        // Convertir a UTC antes de enviar
-        if (payload.fecha_entrega) {
-            const localDate = new Date(payload.fecha_entrega);
-            payload.fecha_entrega = localDate.toISOString();
-        }
 
         post(route("mensajes-postumos.update", mensaje.id));
     };
@@ -253,12 +229,7 @@ export default function Edit({ auth, mensaje }) {
                                         type="datetime-local"
                                         className="mt-1 block w-full"
                                         value={data.fecha_entrega}
-                                        onChange={(e) =>
-                                            setData(
-                                                "fecha_entrega",
-                                                e.target.value
-                                            )
-                                        }
+                                        onChange={(e) => setData("fecha_entrega", e.target.value)}
                                         required
                                     />
                                     <InputError
