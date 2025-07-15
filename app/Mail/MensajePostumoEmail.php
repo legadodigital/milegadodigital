@@ -51,6 +51,15 @@ class MensajePostumoEmail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        $attachments = [];
+
+        if ($this->mensajePostumo->ruta_archivo) {
+            $attachments[] = \Illuminate\Mail\Mailables\Attachment::fromStorageDisk(
+                'private', // O el disco que uses para los archivos
+                $this->mensajePostumo->ruta_archivo
+            );
+        }
+
+        return $attachments;
     }
 }

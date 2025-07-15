@@ -29,36 +29,30 @@ class EnviarMensajesPostumos extends Command
      */
     public function handle()
     {
-        $this->info('Buscando mensajes póstumos pendientes para enviar...');
+        $this->info('Buscando mensajes póstumos pendientes para encolar...');
 
-        $mensajesPendientes = MensajePostumo::where('estado', 'pendiente')
-            ->where('fecha_entrega', '<=', Carbon::now())
+        $mensajesParaEnviar = MensajePostumo::where('estado', 'pendiente')
+            ->whereDate('fecha_entrega', '<=', Carbon::today())
             ->get();
 
-        if ($mensajesPendientes->isEmpty()) {
-            $this->info('No se encontraron mensajes póstumos pendientes para enviar.');
+        if ($mensajesParaEnviar->isEmpty()) {
+            $this->info('No se encontraron mensajes póstumos para enviar hoy.');
             return Command::SUCCESS;
         }
 
-        $this->info(sprintf('Se encontraron %d mensajes póstumos pendientes.', $mensajesPendientes->count()));
+        $this->info(sprintf('Se encontraron %d mensajes póstumos. Encolando jobs...', $mensajesParaEnviar->count()));
 
-        foreach ($mensajesPendientes as $mensaje) {
+        foreach ($mensajesParaEnviar as $mensaje) {
             try {
-                Mail::to($mensaje->destinatario_email)->send(new MensajePostumoEmail($mensaje));
-                $this->info(sprintf('Enviando mensaje "%s" a %s.', $mensaje->titulo, $mensaje->destinatario_email));
-
-                $mensaje->update([
-                    'estado' => 'enviado',
-                    'delivered_at' => Carbon::now(),
-                ]);
-
-                $this->info('Mensaje marcado como enviado.');
+                // Despachar un job por cada mensaje
+                \App\Jobs\EnviarMensajePostumoJob::dispatch($mensaje);
+                $this->info(sprintf('Job encolado para el mensaje ID %d.', $mensaje->id));
             } catch (\Exception $e) {
-                $this->error(sprintf('Error al enviar el mensaje %d: %s', $mensaje->id, $e->getMessage()));
+                $this->error(sprintf('Error al encolar el job para el mensaje ID %d: %s', $mensaje->id, $e->getMessage()));
             }
         }
 
-        $this->info('Proceso de envío de mensajes póstumos completado.');
+        $this->info('Proceso de encolado de mensajes póstumos completado.');
 
         return Command::SUCCESS;
     }

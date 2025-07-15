@@ -106,6 +106,7 @@ class TransbankController extends Controller
                 'amount' => $amount,
                 'buy_order' => $tbkOrdenCompra,
                 'session_id' => $tbkIdSesion,
+                'token_ws' => $tbkToken, // Guardar el token de la transacción anulada
                 'status' => 'cancelled',
                 'transbank_response' => json_encode($request->all()),
                 'payment_method' => 'webpay',
