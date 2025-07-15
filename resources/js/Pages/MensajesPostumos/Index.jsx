@@ -92,18 +92,7 @@ export default function Index({ auth, mensajes }) {
                                                     <td className="py-2 px-4 border-b">{mensaje.tipo_mensaje}</td>
                                                     <td className="py-2 px-4 border-b">{mensaje.destinatario_email}</td>
                                                     <td className="py-2 px-4 border-b">
-                                                        {mensaje.fecha_entrega ? (() => {
-                                                            const dateString = mensaje.fecha_entrega + 'Z';
-                                                            console.log('fecha_entrega raw:', mensaje.fecha_entrega);
-                                                            console.log('dateString for new Date():', dateString);
-                                                            const dateObject = new Date(dateString);
-                                                            console.log('dateObject from new Date():', dateObject);
-                                                            if (isNaN(dateObject.getTime())) {
-                                                                console.error('Invalid Date object created for:', dateString);
-                                                                return 'Fecha Inválida';
-                                                            }
-                                                            return format(dateObject, 'dd/MM/yyyy HH:mm');
-                                                        })() : 'N/A'}
+                                                        {mensaje.fecha_entrega ? format(new Date(mensaje.fecha_entrega), 'dd/MM/yyyy HH:mm') : 'N/A'}
                                                     </td>
                                                     <td className="py-2 px-4 border-b">{mensaje.estado}</td>
                                                     <td className="py-2 px-4 border-b">
