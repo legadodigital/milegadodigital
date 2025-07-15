@@ -4,6 +4,7 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import CookieConsent from '@/Components/CookieConsent';
 
 export default function AuthenticatedLayout({ header, children }) {
     const { auth } = usePage().props;
@@ -295,9 +296,29 @@ export default function AuthenticatedLayout({ header, children }) {
 
             <footer className="bg-white shadow py-4 mt-8">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
+                    <div className="flex justify-center space-x-4 mb-2">
+                        <a
+                            href="/docs/Condiciones-y-Terminos-de-uso-MLV.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-gray-600 hover:text-gray-900 transition duration-300 text-sm"
+                        >
+                            Términos de Uso
+                        </a>
+                        <span className="text-gray-400">|</span>
+                        <a
+                            href="/docs/Politica-de-Privacidad-MLV.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-gray-600 hover:text-gray-900 transition duration-300 text-sm"
+                        >
+                            Política de Privacidad
+                        </a>
+                    </div>
                     &copy; 2025 Legado Digital. Todos los derechos reservados.
                 </div>
             </footer>
+            <CookieConsent />
         </div>
     );
 }
