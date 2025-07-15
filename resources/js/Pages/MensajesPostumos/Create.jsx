@@ -139,7 +139,11 @@ export default function Create({ auth }) {
                                         id="fecha_entrega"
                                         type="datetime-local"
                                         className="mt-1 block w-full"
-                                        value={data.fecha_entrega ? format(new Date(data.fecha_entrega), 'yyyy-MM-dd\'T\'HH:mm') : ''}
+                                        value={(() => {
+                                            const formattedValue = data.fecha_entrega ? format(new Date(data.fecha_entrega), 'yyyy-MM-dd\'T\'HH:mm') : '';
+                                            console.log('Create.jsx - fecha_entrega value for input:', formattedValue);
+                                            return formattedValue;
+                                        })()}
                                         onChange={(e) => {
                                             const localDateTimeString = e.target.value;
                                             if (localDateTimeString) {
