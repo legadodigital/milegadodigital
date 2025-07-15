@@ -7,6 +7,24 @@ import TextInput from "@/Components/TextInput";
 import { format } from "date-fns";
 
 export default function Edit({ auth, mensaje }) {
+    // Función auxiliar para convertir una fecha UTC a formato local (yyyy-MM-dd'T'HH:mm)
+    const utcToLocalISOString = (utcDateString) => {
+        const date = new Date(utcDateString);
+
+        if (isNaN(date.getTime())) {
+            console.error("Fecha inválida:", utcDateString);
+            return "";
+        }
+
+        const year = String(date.getFullYear()).padStart(4, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // getMonth es 0-based
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    };
+
     const { data, setData, post, processing, errors } = useForm({
         titulo: mensaje.titulo,
         contenido: mensaje.contenido || "",
@@ -14,20 +32,7 @@ export default function Edit({ auth, mensaje }) {
         destinatario_email: mensaje.destinatario_email,
         destinatario_nombre: mensaje.destinatario_nombre || "",
         fecha_entrega: mensaje.fecha_entrega
-            ? (() => {
-                  const date = new Date(mensaje.fecha_entrega);
-
-                  // Formato manual sin milisegundos ni zona horaria
-                  const year = String(date.getFullYear());
-                  const month = String(date.getMonth() + 1).padStart(2, "0");
-                  const day = String(date.getDate()).padStart(2, "0");
-                  const hours = String(date.getHours()).padStart(2, "0");
-                  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-                  const formattedValue = `${year}-${month}-${day}T${hours}:${minutes}`;
-
-                  return formattedValue;
-              })()
+            ? utcToLocalISOString(mensaje.fecha_entrega)
             : "",
         archivo: null,
         _method: "put",
@@ -36,18 +41,15 @@ export default function Edit({ auth, mensaje }) {
     const submit = (e) => {
         e.preventDefault();
 
-        // Preparar payload
-        const payload = { ...data };
+        let payload = { ...data };
 
-        // Convertir fecha_entrega a ISO solo antes de enviar
+        // Convertir a UTC antes de enviar
         if (payload.fecha_entrega) {
             const localDate = new Date(payload.fecha_entrega);
             payload.fecha_entrega = localDate.toISOString();
         }
 
-        post(route("mensajes-postumos.update", mensaje.id), {
-            data: payload,
-        });
+        post(route("mensajes-postumos.update", mensaje.id));
     };
 
     return (
@@ -69,11 +71,9 @@ export default function Edit({ auth, mensaje }) {
                                 className="mt-6 space-y-6"
                                 encType="multipart/form-data"
                             >
-                             <div>
-                                    <InputLabel
-                                        htmlFor="titulo"
-                                        value="Título"
-                                    />
+                                {/* Campo Título */}
+                                <div>
+                                    <InputLabel htmlFor="titulo" value="Título" />
                                     <TextInput
                                         id="titulo"
                                         className="mt-1 block w-full"
@@ -90,6 +90,7 @@ export default function Edit({ auth, mensaje }) {
                                     />
                                 </div>
 
+                                {/* Campo Contenido */}
                                 <div>
                                     <InputLabel
                                         htmlFor="contenido"
@@ -100,7 +101,10 @@ export default function Edit({ auth, mensaje }) {
                                         className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                         value={data.contenido}
                                         onChange={(e) =>
-                                            setData("contenido", e.target.value)
+                                            setData(
+                                                "contenido",
+                                                e.target.value
+                                            )
                                         }
                                     ></textarea>
                                     <InputError
@@ -109,48 +113,61 @@ export default function Edit({ auth, mensaje }) {
                                     />
                                 </div>
 
-                                {data.tipo_mensaje === "video" &&
-                                    data.temp_video_path && (
-                                        <div className="mt-4">
-                                            <InputLabel value="Previsualización del Video" />
-                                            <video
-                                                controls
-                                                src={`/storage/${data.temp_video_path}`}
-                                                className="mt-1 block w-full max-w-md rounded-md"
-                                            />
-                                        </div>
-                                    )}
+                                {/* Campo Archivo */}
+                                <div>
+                                    <InputLabel
+                                        htmlFor="archivo"
+                                        value="Archivo (Audio/Video)"
+                                    />
+                                    <input
+                                        id="archivo"
+                                        type="file"
+                                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                        onChange={(e) =>
+                                            setData(
+                                                "archivo",
+                                                e.target.files[0]
+                                            )
+                                        }
+                                    />
+                                    <InputError
+                                        className="mt-2"
+                                        message={errors.archivo}
+                                    />
+                                    <p className="mt-2 text-sm text-gray-600">
+                                        Formatos permitidos: Imágenes (JPG, PNG,
+                                        GIF, BMP, SVG, WEBP), Video (MP4, MOV,
+                                        OGG, QT), Audio (MP3, WAV, AAC). Tamaño
+                                        máximo: 20MB.
+                                    </p>
+                                    {mensaje.ruta_archivo &&
+                                        mensaje.tipo_archivo_media ===
+                                            "video" && (
+                                            <div className="mt-2">
+                                                <video
+                                                    controls
+                                                    src={`/storage/${mensaje.ruta_archivo}`}
+                                                    className="w-full max-w-md rounded-md"
+                                                />
+                                            </div>
+                                        )}
+                                    {mensaje.ruta_archivo &&
+                                        mensaje.tipo_archivo_media !==
+                                            "video" && (
+                                            <p className="mt-2 text-sm text-gray-600">
+                                                Archivo actual:{" "}
+                                                <a
+                                                    href={`/storage/${mensaje.ruta_archivo}`}
+                                                    target="_blank"
+                                                    className="text-blue-500 hover:underline"
+                                                >
+                                                    Ver archivo
+                                                </a>
+                                            </p>
+                                        )}
+                                </div>
 
-                                {data.tipo_mensaje !== "video" && (
-                                    <div>
-                                        <InputLabel
-                                            htmlFor="archivo"
-                                            value="Archivo (Audio/Video)"
-                                        />
-                                        <input
-                                            id="archivo"
-                                            type="file"
-                                            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                            onChange={(e) =>
-                                                setData(
-                                                    "archivo",
-                                                    e.target.files[0]
-                                                )
-                                            }
-                                        />
-                                        <InputError
-                                            className="mt-2"
-                                            message={errors.archivo}
-                                        />
-                                        <p className="mt-2 text-sm text-gray-600">
-                                            Formatos permitidos: Imágenes (JPG,
-                                            PNG, GIF, BMP, SVG, WEBP), Video
-                                            (MP4, MOV, OGG, QT), Audio (MP3,
-                                            WAV, AAC). Tamaño máximo: 20MB.
-                                        </p>
-                                    </div>
-                                )}
-
+                                {/* Campo Tipo de Mensaje */}
                                 <div>
                                     <InputLabel
                                         htmlFor="tipo_mensaje"
@@ -177,6 +194,7 @@ export default function Edit({ auth, mensaje }) {
                                     />
                                 </div>
 
+                                {/* Campo Email del Destinatario */}
                                 <div>
                                     <InputLabel
                                         htmlFor="destinatario_email"
@@ -201,6 +219,7 @@ export default function Edit({ auth, mensaje }) {
                                     />
                                 </div>
 
+                                {/* Campo Nombre del Destinatario */}
                                 <div>
                                     <InputLabel
                                         htmlFor="destinatario_nombre"
@@ -223,6 +242,7 @@ export default function Edit({ auth, mensaje }) {
                                     />
                                 </div>
 
+                                {/* Campo Fecha de Entrega - CORRECTAMENTE MANEJADO */}
                                 <div>
                                     <InputLabel
                                         htmlFor="fecha_entrega"
@@ -245,10 +265,13 @@ export default function Edit({ auth, mensaje }) {
                                         className="mt-2"
                                         message={errors.fecha_entrega}
                                     />
+                                    <p className="text-sm text-gray-500 mt-1">
+                                        Valor actual:{" "}
+                                        {data.fecha_entrega || "Vacío"}
+                                    </p>
                                 </div>
 
-                                {/* Otros campos... (sin cambios) */}
-
+                                {/* Botón de Actualizar */}
                                 <div className="flex items-center gap-4">
                                     <PrimaryButton disabled={processing}>
                                         Actualizar
