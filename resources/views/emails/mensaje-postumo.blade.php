@@ -48,7 +48,7 @@
             <p>Si este mensaje incluye un archivo de video o audio, lo encontrarás adjunto a este correo electrónico.</p>
         </div>
         <div class="footer">
-            <p>Este es un mensaje automático enviado desde la plataforma Mi Legado Digital.</p>
+            <p>Este es un mensaje automático enviado desde la plataforma Mi Legado Virtual.</p>
             <p>&copy; {{ date('Y') }} Mi Legado Digital. Todos los derechos reservados.</p>
         </div>
     </div>
