@@ -31,6 +31,9 @@ class User extends Authenticatable
         'two_factor_secret',
         'is_verified',
         'plan_id',
+        'fecha_nacimiento',
+        'pais',
+        'direccion',
     ];
 
     /**

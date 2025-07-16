@@ -103,7 +103,7 @@ export default function Create({ auth }) {
                                         </div>
                                     )}
 
-                                {data.tipo_mensaje !== "video" && (
+                                {data.tipo_mensaje !== "texto" && (
                                     <div>
                                         <InputLabel
                                             htmlFor="archivo"
