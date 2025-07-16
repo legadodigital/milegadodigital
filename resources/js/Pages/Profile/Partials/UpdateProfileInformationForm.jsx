@@ -16,6 +16,9 @@ export default function UpdateProfileInformation({
         useForm({
             name: user.name,
             email: user.email,
+            fecha_nacimiento: user.fecha_nacimiento || '',
+            pais: user.pais || '',
+            direccion: user.direccion || '',
         });
 
     const submit = (e) => {
@@ -67,6 +70,58 @@ export default function UpdateProfileInformation({
                     />
 
                     <InputError className="mt-2" message={errors.email} />
+                </div>
+
+                <div>
+                    <InputLabel htmlFor="fecha_nacimiento" value="Fecha de Nacimiento" />
+
+                    <TextInput
+                        id="fecha_nacimiento"
+                        type="date"
+                        className="mt-1 block w-full"
+                        value={data.fecha_nacimiento}
+                        onChange={(e) => setData('fecha_nacimiento', e.target.value)}
+                    />
+
+                    <InputError className="mt-2" message={errors.fecha_nacimiento} />
+                </div>
+
+                <div>
+                    <InputLabel htmlFor="pais" value="País" />
+
+                    <select
+                        id="pais"
+                        className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                        value={data.pais}
+                        onChange={(e) => setData('pais', e.target.value)}
+                    >
+                        <option value="">Selecciona un país</option>
+                        <option value="Argentina">Argentina</option>
+                        <option value="Bolivia">Bolivia</option>
+                        <option value="Chile">Chile</option>
+                        <option value="Colombia">Colombia</option>
+                        <option value="Ecuador">Ecuador</option>
+                        <option value="Paraguay">Paraguay</option>
+                        <option value="Perú">Perú</option>
+                        <option value="Uruguay">Uruguay</option>
+                        <option value="Venezuela">Venezuela</option>
+                    </select>
+
+                    <InputError className="mt-2" message={errors.pais} />
+                </div>
+
+                <div>
+                    <InputLabel htmlFor="direccion" value="Dirección" />
+
+                    <TextInput
+                        id="direccion"
+                        type="text"
+                        className="mt-1 block w-full"
+                        value={data.direccion}
+                        onChange={(e) => setData('direccion', e.target.value)}
+                    />
+
+                    <InputError className="mt-2" message={errors.direccion} />
                 </div>
 
                 {mustVerifyEmail && user.email_verified_at === null && (

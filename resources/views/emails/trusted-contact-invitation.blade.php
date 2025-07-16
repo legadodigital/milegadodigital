@@ -24,7 +24,7 @@
             <p>Te invitamos a unirte a nuestra plataforma para entender mejor cómo funciona y cómo puedes gestionar tu propio legado virtual, o simplemente para estar preparado para cuando {{ $inviterName }} necesite que accedas a su información.</p>
             <p>Puedes visitar nuestra plataforma aquí:</p>
             <p style="text-align: center;">
-                <a href="https://www.milegadovirtual.com" class="button">Visitar Mi Legado Virtual</a>
+                <a href="https://www.milegadovirtual.cl" class="button">Visitar Mi Legado Virtual</a>
             </p>
             <p>Si tienes alguna pregunta, no dudes en contactarnos.</p>
             <p>Saludos cordiales,</p>
