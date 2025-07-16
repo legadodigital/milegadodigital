@@ -32,7 +32,7 @@ class EnviarMensajesPostumos extends Command
         $this->info('Buscando mensajes póstumos pendientes para encolar...');
 
         $mensajesParaEnviar = MensajePostumo::where('estado', 'pendiente')
-            ->whereDate('fecha_entrega', '<=', Carbon::today())
+            ->where('fecha_entrega', '<=', Carbon::now())
             ->get();
 
         if ($mensajesParaEnviar->isEmpty()) {

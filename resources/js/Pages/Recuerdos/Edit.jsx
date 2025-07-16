@@ -99,9 +99,9 @@ export default function Edit({ auth, recuerdo }) {
                                         value={data.visibilidad}
                                         onChange={(e) => setData('visibilidad', e.target.value)}
                                     >
-                                        <option value="privado">Privado</option>
+
                                         <option value="contactos">Solo Contactos</option>
-                                        <option value="publico">Público</option>
+
                                     </select>
                                     <InputError className="mt-2" message={errors.visibilidad} />
                                 </div>
@@ -115,9 +115,9 @@ export default function Edit({ auth, recuerdo }) {
                                                     {mediaItem.tipo_media === 'imagen' && (
                                                         <img src={`/storage/${mediaItem.ruta_archivo}`} alt="Recuerdo" className="w-full h-24 object-cover rounded-md" />
                                                     )}
-                                                    {mediaItem.tipo_media === 'video' && (
+                                                    {/* {mediaItem.tipo_media === 'video' && (
                                                         <video src={`/storage/${mediaItem.ruta_archivo}`} controls className="w-full h-24 object-cover rounded-md"></video>
-                                                    )}
+                                                    )} */}
                                                     {mediaItem.tipo_media === 'audio' && (
                                                         <audio src={`/storage/${mediaItem.ruta_archivo}`} controls className="w-full"></audio>
                                                     )}

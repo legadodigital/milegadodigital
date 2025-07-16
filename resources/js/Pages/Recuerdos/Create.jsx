@@ -94,15 +94,15 @@ export default function Create({ auth }) {
                                         value={data.visibilidad}
                                         onChange={(e) => setData('visibilidad', e.target.value)}
                                     >
-                                        <option value="privado">Privado</option>
+
                                         <option value="contactos">Solo Contactos</option>
-                                        <option value="publico">Público</option>
+
                                     </select>
                                     <InputError className="mt-2" message={errors.visibilidad} />
                                 </div>
 
                                 <div>
-                                    <InputLabel htmlFor="archivos" value="Archivos Multimedia (Fotos/Videos/Audios)" />
+                                    <InputLabel htmlFor="archivos" value="Archivos Multimedia (Fotos/Audios)" />
                                     <input
                                         id="archivos"
                                         type="file"
