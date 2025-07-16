@@ -6,6 +6,15 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-REB5K59SCH"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-REB5K59SCH');
+        </script>
          <link rel="icon" type="image/png" sizes="32x32" href="/img/logo.png">
            <link rel="icon" type="image/png" sizes="16x16" href="/img/logo.png">
         <!-- Fonts -->
