@@ -123,10 +123,10 @@ class MensajePostumoController extends Controller
         if ($request->hasFile('archivo')) {
             // Eliminar archivo antiguo si existe
             if ($rutaArchivo) {
-                Storage::disk('public')->delete($rutaArchivo);
+                Storage::disk('local')->delete($rutaArchivo);
             }
             $file = $request->file('archivo');
-            $rutaArchivo = $file->store('mensajes_postumos', 'public');
+            $rutaArchivo = $file->store('mensajes_postumos', 'local');
             $tipoArchivoMedia = $this->getMediaType($file->getMimeType());
         }
 
@@ -168,7 +168,7 @@ class MensajePostumoController extends Controller
 
         // Eliminar archivo asociado si existe
         if ($mensajePostumo->ruta_archivo) {
-            Storage::disk('public')->delete($mensajePostumo->ruta_archivo);
+            Storage::disk('local')->delete($mensajePostumo->ruta_archivo);
         }
 
         $mensajePostumo->delete();
