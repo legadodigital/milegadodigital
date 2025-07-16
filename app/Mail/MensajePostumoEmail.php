@@ -54,9 +54,19 @@ class MensajePostumoEmail extends Mailable
         $attachments = [];
 
         if ($this->mensajePostumo->ruta_archivo) {
+            Log::info('Attempting to attach file: ' . $this->mensajePostumo->ruta_archivo);
+            $filePath = $this->mensajePostumo->ruta_archivo;
+            $disk = 'local';
+
+            if (!\Illuminate\Support\Facades\Storage::disk($disk)->exists($filePath)) {
+                Log::error(sprintf('File not found on disk %s: %s', $disk, $filePath));
+                // Optionally, you might want to throw an exception or handle this more gracefully
+                return $attachments; // Skip attachment if file doesn't exist
+            }
+
             $attachments[] = \Illuminate\Mail\Mailables\Attachment::fromStorageDisk(
-                'local', // O el disco que uses para los archivos
-                $this->mensajePostumo->ruta_archivo
+                $disk, // O el disco que uses para los archivos
+                $filePath
             );
         }
 

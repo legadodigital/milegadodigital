@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
-class EnviarMensajePostumoJob implements ShouldQueue
+class EnviarMensajePostumoJob
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
