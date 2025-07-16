@@ -13,6 +13,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        \Illuminate\Support\Facades\Log::info('Scheduler running at: ' . \Carbon\Carbon::now()->toDateTimeString() . ' (' . \Carbon\Carbon::now()->timezoneName . ')');
+
         $schedule->command(EnviarMensajesPostumos::class)->everyMinute();
     }
 
