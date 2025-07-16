@@ -18,4 +18,6 @@ Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos.
 Con cariño y gratitud,
 
 El Equipo de Mi Legado Virtual
+
+Este ess un mensaje automático enviado desde Mi Legado Virtual
 </x-mail::message>
