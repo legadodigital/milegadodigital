@@ -31,9 +31,15 @@ class EnviarMensajesPostumos extends Command
     {
         $this->info('Buscando mensajes póstumos pendientes para encolar...');
 
+        $now = Carbon::now();
+        $this->info(sprintf('Current time (Carbon::now()): %s', $now->toDateTimeString()));
+
         $mensajesParaEnviar = MensajePostumo::where('estado', 'pendiente')
-            ->where('fecha_entrega', '<=', Carbon::now())
+            ->where('fecha_entrega', '<=', $now)
             ->get();
+
+        $this->info(sprintf('Querying for messages where fecha_entrega <= %s', $now->toDateTimeString()));
+        $this->info(sprintf('Found %d messages matching criteria.', $mensajesParaEnviar->count()));
 
         if ($mensajesParaEnviar->isEmpty()) {
             $this->info('No se encontraron mensajes póstumos para enviar hoy.');
