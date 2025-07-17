@@ -44,20 +44,18 @@ class WishListItemController extends Controller
         }
 
         $validated = $request->validate([
-            'description' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
             'completed' => 'boolean',
             'completion_date' => 'nullable|date',
         ]);
 
-        \Illuminate\Support\Facades\Log::info('Validated completed value: ' . var_export($validated['completed'], true) . ' (Type: ' . gettype($validated['completed']) . ')');
-
-        $completedValue = isset($validated['completed']) ? (bool)$validated['completed'] : $wishListItem->completed;
-        \Illuminate\Support\Facades\Log::info('Completed value before update: ' . var_export($completedValue, true) . ' (Type: ' . gettype($completedValue) . ')');
+        $completedValue = (isset($validated['completed']) ? (bool)$validated['completed'] : $wishListItem->completed);
+        $completionDateValue = $validated['completion_date'] ?? null;
 
         $wishListItem->update([
-            'description' => $validated['description'],
-            'completed' => (isset($validated['completed']) ? (bool)$validated['completed'] : $wishListItem->completed) ? 'true' : 'false',
-            'completion_date' => $validated['completion_date'] ?? null,
+            'description' => $validated['description'] ?? $wishListItem->description,
+            'completed' => $completedValue ? 'true' : 'false',
+            'completion_date' => $completionDateValue,
         ]);
 
         return redirect()->route('wishlist.index');
