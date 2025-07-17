@@ -13,7 +13,15 @@ export default function Welcome({ auth, plans }) {
 
     return (
         <>
-            <Head title="Bienvenido a Mi Legado Virtual" />
+            <Head title="Bienvenido a Mi Legado Virtual">
+                <meta
+                    name="description"
+                    content="Mi Legado Virtual te permite dejar
+                            mensajes póstumos, videos y documentos importantes a tus seres queridos.
+                            Un puente
+                            de amor eterno para tu legado."
+                ></meta>
+            </Head>
             <div className="min-h-screen bg-cover bg-center font-sans">
                 {/* Header and Navigation */}
                 <header className="bg-gray-800 text-white p-4 fixed w-full z-20 shadow-md">
@@ -261,6 +269,29 @@ export default function Welcome({ auth, plans }) {
                             </div>
                         </div>
                     </section>
+                    {/* Lista de Deseos Section */}
+                    <section
+                        id="lista-deseos"
+                        className="py-16 bg-calm-green-50 text-gray-800"
+                    >
+                        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+                            <h2 className="text-4xl font-bold mb-8">
+                                ¿Qué Sueños Quieres Dejar Cumplidos?
+                            </h2>
+                            <p className="text-lg leading-relaxed max-w-3xl mx-auto mb-8">
+                                La vida es un lienzo en blanco, y cada día una oportunidad para pintar nuestros sueños más profundos. En Mi Legado Virtual, no solo te ayudamos a preservar tu memoria, sino también a dar vida a tus aspiraciones. Crea tu "Lista de Deseos": esos anhelos, metas y experiencias que siempre quisiste vivir. Desde aprender un nuevo idioma hasta visitar un lugar soñado, cada deseo es un paso hacia una vida plena.
+                            </p>
+                            <p className="text-lg leading-relaxed max-w-3xl mx-auto mb-8">
+                                Imagina la satisfacción de tachar cada deseo, sabiendo que estás construyendo un legado no solo de recuerdos, sino de una vida vivida al máximo. Y si el tiempo te sorprende, tus seres queridos encontrarán en esta lista un mapa de tus pasiones, una inspiración para continuar tu viaje, y la certeza de que cada día fue una búsqueda de la felicidad.
+                            </p>
+                            <Link
+                                href={route("register")}
+                                className="inline-block px-8 py-3 bg-calm-green-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-calm-green-700 transition duration-300 transform hover:scale-105"
+                            >
+                                Empieza a Soñar en Grande
+                            </Link>
+                        </div>
+                    </section>
                     {/* Quienes Somos Section */}
                     <section
                         id="quienes-somos"
@@ -405,6 +436,13 @@ export default function Welcome({ auth, plans }) {
                             <h2 className="text-4xl font-bold text-center mb-12">
                                 Nuestros Planes
                             </h2>
+                            <div className="flex justify-center mb-8">
+                                <img
+                                    src="/img/webpay-logo-plus.jpg"
+                                    alt="Webpay Plus Logo"
+                                    className="h-16 object-contain"
+                                />
+                            </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                                 {plans.map((plan) => (
                                     <div
@@ -605,7 +643,7 @@ export default function Welcome({ auth, plans }) {
                             </p>
                             <div className="mt-8 flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
                                 <a
-                                    href="mailto:soporte@legadovirtual.cl"
+                                    href="mailto:soporte@milegadovirtual.cl"
                                     className="text-calm-green-600 hover:text-calm-green-800 text-lg font-semibold flex items-center transition duration-300"
                                 >
                                     <svg
@@ -622,7 +660,7 @@ export default function Welcome({ auth, plans }) {
                                             d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                                         />
                                     </svg>
-                                    soporte@legadovirtual.cl
+                                    soporte@milegadovirtual.cl
                                 </a>
                                 {/* <a href="tel:+1234567890" className="text-calm-green-600 hover:text-calm-green-800 text-lg font-semibold flex items-center transition duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -694,7 +732,7 @@ export default function Welcome({ auth, plans }) {
                                             viewBox="0 0 24 24"
                                             fill="currentColor"
                                         >
-                                            <path d="M 6 3 C 4.3550302 3 3 4.3550302 3 6 L 3 18 C 3 19.64497 4.3550302 21 6 21 L 18 21 C 19.64497 21 21 19.64497 21 18 L 21 6 C 21 4.3550302 19.64497 3 18 3 L 6 3 z M 6 5 L 18 5 C 18.56503 5 19 5.4349698 19 6 L 19 18 C 19 18.56503 18.56503 19 18 19 L 6 19 C 5.4349698 19 5 18.56503 5 18 L 5 6 C 5 5.4349698 5.4349698 5 6 5 z M 12 7 L 12 14 C 12 14.56503 11.56503 15 11 15 C 10.43497 15 10 14.56503 10 14 C 10 13.43497 10.43497 13 11 13 L 11 11 C 9.3550302 11 8 12.35503 8 14 C 8 15.64497 9.3550302 17 11 17 C 12.64497 17 14 15.64497 14 14 L 14 10.232422 C 14.616148 10.671342 15.259118 11 16 11 L 16 9 C 15.952667 9 15.262674 8.7809373 14.78125 8.3613281 C 14.299826 7.941719 14 7.4149911 14 7 L 12 7 z"/>
+                                            <path d="M 6 3 C 4.3550302 3 3 4.3550302 3 6 L 3 18 C 3 19.64497 4.3550302 21 6 21 L 18 21 C 19.64497 21 21 19.64497 21 18 L 21 6 C 21 4.3550302 19.64497 3 18 3 L 6 3 z M 6 5 L 18 5 C 18.56503 5 19 5.4349698 19 6 L 19 18 C 19 18.56503 18.56503 19 18 19 L 6 19 C 5.4349698 19 5 18.56503 5 18 L 5 6 C 5 5.4349698 5.4349698 5 6 5 z M 12 7 L 12 14 C 12 14.56503 11.56503 15 11 15 C 10.43497 15 10 14.56503 10 14 C 10 13.43497 10.43497 13 11 13 L 11 11 C 9.3550302 11 8 12.35503 8 14 C 8 15.64497 9.3550302 17 11 17 C 12.64497 17 14 15.64497 14 14 L 14 10.232422 C 14.616148 10.671342 15.259118 11 16 11 L 16 9 C 15.952667 9 15.262674 8.7809373 14.78125 8.3613281 C 14.299826 7.941719 14 7.4149911 14 7 L 12 7 z" />
                                         </svg>
                                     </a>
                                     <a
@@ -726,7 +764,15 @@ export default function Welcome({ auth, plans }) {
                                         className="text-white hover:text-calm-green-400 transition duration-300"
                                     >
                                         {/* X (Twitter) SVG Icon */}
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.901 1.199h3.581l-8.61 9.916 9.438 11.885h-7.063l-6.64-8.893-7.48 8.893h-3.58l8.93-10.316-9.76-11.568h7.23l5.84 7.785 6.12-7.785zm-1.16 18.422h2.12l-6.21-7.997-5.04 7.997h-2.12l6.21-7.997 5.04 7.997z"/></svg>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                        >
+                                            <path d="M18.901 1.199h3.581l-8.61 9.916 9.438 11.885h-7.063l-6.64-8.893-7.48 8.893h-3.58l8.93-10.316-9.76-11.568h7.23l5.84 7.785 6.12-7.785zm-1.16 18.422h2.12l-6.21-7.997-5.04 7.997h-2.12l6.21-7.997 5.04 7.997z" />
+                                        </svg>
                                     </a>
                                 </div>
                                 <a

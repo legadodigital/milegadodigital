@@ -66,6 +66,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Grabar Video
                                 </NavLink>
+                                <NavLink
+                                    href={route('wishlist.index')}
+                                    active={route().current('wishlist.index')}
+                                >
+                                    Lista de Deseos
+                                </NavLink>
                                 {user.is_admin && (
                                     <>
                                         <NavLink
@@ -233,6 +239,12 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current('video.recorder')}
                         >
                             Grabar Video
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('wishlist.index')}
+                            active={route().current('wishlist.index')}
+                        >
+                            Lista de Deseos
                         </ResponsiveNavLink>
                         {user.is_admin && (
                             <>

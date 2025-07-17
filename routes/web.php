@@ -115,6 +115,12 @@ Route::middleware('auth')->group(function () {
     Route::put('/recuerdos/{recuerdo}', [RecuerdoController::class, 'update'])->name('recuerdos.update');
     Route::delete('/recuerdos/{recuerdo}', [RecuerdoController::class, 'destroy'])->name('recuerdos.destroy');
 
+    // Rutas para Lista de Deseos
+    Route::get('/lista-deseos', [App\Http\Controllers\WishListItemController::class, 'index'])->name('wishlist.index');
+    Route::post('/lista-deseos', [App\Http\Controllers\WishListItemController::class, 'store'])->name('wishlist.store');
+    Route::patch('/lista-deseos/{wishListItem}', [App\Http\Controllers\WishListItemController::class, 'update'])->name('wishlist.update');
+    Route::delete('/lista-deseos/{wishListItem}', [App\Http\Controllers\WishListItemController::class, 'destroy'])->name('wishlist.destroy');
+
     // Ruta para Grabar Video
     Route::get('/grabar-video', function () {
         $user = auth()->user();
