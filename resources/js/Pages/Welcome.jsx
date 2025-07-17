@@ -286,6 +286,7 @@ export default function Welcome({ auth, plans }) {
                             </p>
                             <Link
                                 href={route("register")}
+
                                 className="inline-block px-8 py-3 bg-calm-green-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-calm-green-700 transition duration-300 transform hover:scale-105"
                             >
                                 Empieza a Soñar en Grande
