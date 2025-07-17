@@ -276,7 +276,7 @@ export default function Welcome({ auth, plans }) {
                                     </h3>
                                     <p className="text-gray-600">
                                         Designa a las personas que gestionarán
-                                        tu legado Virtual.
+                                        tu Legado Virtual.
                                     </p>
                                 </div>
                             </div>
@@ -474,7 +474,7 @@ export default function Welcome({ auth, plans }) {
                                 <span className={`ml-3 text-sm font-medium ${billingCycle === 'annually' ? 'text-gray-900' : 'text-gray-500'}`}>
                                     Pago Anual
                                     <span className="text-xs text-green-600 ml-1">
-                                        (Ahorra hasta 20%)
+                                        (Ahorra hasta 15%)
                                     </span>
                                 </span>
                             </div>
