@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { format, parseISO, parse } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-export default function Create({ auth }) {
+export default function Create({ auth, temp_video_path }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         titulo: "",
         contenido: "",
@@ -17,7 +17,7 @@ export default function Create({ auth }) {
         destinatario_nombre: "",
         fecha_entrega: "",
         archivo: null,
-        temp_video_path: null,
+        temp_video_path: temp_video_path,
     });
 
     useEffect(() => {
@@ -91,19 +91,18 @@ export default function Create({ auth }) {
                                     />
                                 </div>
 
-                                {data.tipo_mensaje === "video" &&
-                                    data.temp_video_path && (
-                                        <div className="mt-4">
-                                            <InputLabel value="Previsualización del Video" />
-                                            <video
-                                                controls
-                                                src={`/storage/${data.temp_video_path}`}
-                                                className="mt-1 block w-full max-w-md rounded-md"
-                                            />
-                                        </div>
-                                    )}
+                                {data.tipo_mensaje === "video" && data.temp_video_path && (
+                                    <div className="mt-4">
+                                        <InputLabel value="Previsualización del Video" />
+                                        <video
+                                            controls
+                                            src={`/storage/${data.temp_video_path}`}
+                                            className="mt-1 block w-full max-w-md rounded-md"
+                                        />
+                                    </div>
+                                )}
 
-                                {data.tipo_mensaje !== "texto" && (
+                                {data.tipo_mensaje !== "video" && (
                                     <div>
                                         <InputLabel
                                             htmlFor="archivo"
