@@ -75,11 +75,18 @@ export default function VideoRecorder({ auth }) {
                 formData.append('video', blob, 'recorded-video.mp4');
 
                 try {
+                    const csrfToken = window.Laravel.csrfToken;
+                    if (!csrfToken) {
+                        console.error('CSRF token not found.');
+                        alert('Error de seguridad: CSRF token no encontrado. Por favor, recarga la página.');
+                        return;
+                    }
+
                     const response = await fetch(route('mensajes-postumos.uploadVideoTemp'), {
                         method: 'POST',
                         body: formData,
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-CSRF-TOKEN': csrfToken,
                             'X-Requested-With': 'XMLHttpRequest',
                         },
                         credentials: 'include',
