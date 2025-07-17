@@ -282,7 +282,7 @@ export default function Welcome({ auth, plans }) {
                                 La vida es un lienzo en blanco, y cada día una oportunidad para pintar nuestros sueños más profundos. En Mi Legado Virtual, no solo te ayudamos a preservar tu memoria, sino también a dar vida a tus aspiraciones. Crea tu "Lista de Deseos": esos anhelos, metas y experiencias que siempre quisiste vivir. Desde aprender un nuevo idioma hasta visitar un lugar soñado, cada deseo es un paso hacia una vida plena.
                             </p>
                             <p className="text-lg leading-relaxed max-w-3xl mx-auto mb-8">
-                                Imagina la satisfacción de tachar cada deseo, sabiendo que estás construyendo un legado no solo de recuerdos, sino de una vida vivida al máximo. Y si el tiempo te sorprende, tus seres queridos encontrarán en esta lista un mapa de tus pasiones, una inspiración para continuar tu viaje, y la certeza de que cada día fue una búsqueda de la felicidad.
+                                Imagina la satisfacción de tachar cada deseo, sabiendo que estás construyendo un legado no solo de recuerdos, sino de una vida vivida al máximo. Y si el tiempo te sorprende, tus seres queridos encontrarán en esta lista un mapa de tus pasiones, una inspiración para continuar tu viaje, y la certeza de que cada día fue una búsqueda de la felicidad
                             </p>
                             <Link
                                 href={route("register")}
