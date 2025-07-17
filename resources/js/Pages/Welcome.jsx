@@ -1,5 +1,6 @@
 import { Link, Head } from "@inertiajs/react";
 import ApplicationLogo from "@/Components/ApplicationLogo"; // Import the ApplicationLogo component
+import { useState } from 'react';
 
 export default function Welcome({ auth, plans }) {
     const featureTranslations = {
@@ -11,17 +12,29 @@ export default function Welcome({ auth, plans }) {
         max_memories: "Recuerdos",
     };
 
+    const [billingCycle, setBillingCycle] = useState('monthly');
+
+    const calculateAnnualPrice = (plan) => {
+        const monthlyPrice = parseFloat(plan.price);
+        const discount = parseFloat(plan.annual_discount_percentage);
+        const annualPrice = (monthlyPrice * 12 * (1 - discount / 100));
+        return annualPrice.toFixed(2);
+    };
+
+    const getPlanPrice = (plan) => {
+        if (billingCycle === 'annually' && plan.annual_discount_percentage > 0) {
+            const annualPrice = calculateAnnualPrice(plan);
+            return {
+                price: (annualPrice / 12).toFixed(2),
+                period: 'mes (pago anual)',
+                total: `Total Anual: ${Math.round(annualPrice).toLocaleString("es-CL")} CLP`
+            };
+        }
+        return { price: plan.price, period: 'mes' };
+    };
+
     return (
         <>
-            <Head title="Bienvenido a Mi Legado Virtual">
-                <meta
-                    name="description"
-                    content="Mi Legado Virtual te permite dejar
-                            mensajes póstumos, videos y documentos importantes a tus seres queridos.
-                            Un puente
-                            de amor eterno para tu legado."
-                ></meta>
-            </Head>
             <div className="min-h-screen bg-cover bg-center font-sans">
                 {/* Header and Navigation */}
                 <header className="bg-gray-800 text-white p-4 fixed w-full z-20 shadow-md">
@@ -444,187 +457,213 @@ export default function Welcome({ auth, plans }) {
                                     className="h-16 object-contain"
                                 />
                             </div>
+
+                            <div className="my-8 flex items-center justify-center">
+                                <span className={`mr-3 text-sm font-medium ${billingCycle === 'monthly' ? 'text-gray-900' : 'text-gray-500'}`}>
+                                    Pago Mensual
+                                </span>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={billingCycle === 'annually'}
+                                        onChange={() => setBillingCycle(billingCycle === 'monthly' ? 'annually' : 'monthly')}
+                                    />
+                                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                </label>
+                                <span className={`ml-3 text-sm font-medium ${billingCycle === 'annually' ? 'text-gray-900' : 'text-gray-500'}`}>
+                                    Pago Anual
+                                    <span className="text-xs text-green-600 ml-1">
+                                        (Ahorra hasta 20%)
+                                    </span>
+                                </span>
+                            </div>
+
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                {plans.map((plan) => (
-                                    <div
-                                        key={plan.id}
-                                        className="bg-white p-8 rounded-lg shadow-lg flex flex-col transform transition duration-300 hover:scale-105"
-                                    >
-                                        <h3 className="text-2xl font-bold mb-4 text-calm-green-600">
-                                            {plan.name}
-                                        </h3>
-                                        <p className="text-4xl font-extrabold mb-4">
-                                            ${" "}
-                                            {Math.round(
-                                                plan.price
-                                            ).toLocaleString("es-CL")}{" "}
-                                            CLP
-                                            <span className="text-lg font-medium text-gray-600">
-                                                /mes
-                                            </span>
-                                        </p>
-                                        <p className="text-gray-600 mb-6 flex-grow">
-                                            {plan.description}
-                                        </p>
-                                        <ul className="mb-6 space-y-3">
-                                            {plan.features.map((feature) => {
-                                                let displayValue =
-                                                    feature.value;
-                                                let featureName =
-                                                    featureTranslations[
-                                                        feature.feature_code
-                                                    ] || feature.feature_code;
-                                                let isUnavailable = false;
-
-                                                if (feature.value === "-1") {
-                                                    displayValue = "Ilimitado";
-                                                } else if (
-                                                    feature.feature_code ===
-                                                    "video_recording"
-                                                ) {
-                                                    if (
-                                                        feature.value ===
-                                                        "false"
-                                                    ) {
-                                                        displayValue = "No";
-                                                        isUnavailable = true;
-                                                    } else {
-                                                        displayValue = "Sí";
-                                                    }
-                                                } else if (
-                                                    feature.feature_code ===
-                                                    "video_duration"
-                                                ) {
-                                                    const duration = parseInt(
-                                                        feature.value,
-                                                        10
-                                                    );
-                                                    if (duration === 0) {
-                                                        displayValue =
-                                                            "No disponible";
-                                                        isUnavailable = true;
-                                                    } else if (
-                                                        duration % 60 ===
-                                                        0
-                                                    ) {
-                                                        displayValue = `${
-                                                            duration / 60
-                                                        } minutos`;
-                                                    } else {
-                                                        displayValue = `${duration} segundos`;
-                                                    }
-                                                } else if (
-                                                    feature.feature_code ===
-                                                    "max_messages"
-                                                ) {
-                                                    if (
-                                                        parseInt(
-                                                            feature.value,
-                                                            10
-                                                        ) === 0
-                                                    ) {
-                                                        displayValue =
-                                                            "No disponible";
-                                                        isUnavailable = true;
-                                                    } else {
-                                                        displayValue = `${feature.value} mensajes`;
-                                                    }
-                                                } else if (
-                                                    feature.feature_code ===
-                                                    "max_documents"
-                                                ) {
-                                                    if (
-                                                        parseInt(
-                                                            feature.value,
-                                                            10
-                                                        ) === 0
-                                                    ) {
-                                                        displayValue =
-                                                            "No disponible";
-                                                        isUnavailable = true;
-                                                    } else {
-                                                        displayValue = `${feature.value} documentos`;
-                                                    }
-                                                } else if (
-                                                    feature.feature_code ===
-                                                    "max_trusted_contacts"
-                                                ) {
-                                                    if (
-                                                        parseInt(
-                                                            feature.value,
-                                                            10
-                                                        ) === 0
-                                                    ) {
-                                                        displayValue =
-                                                            "No disponible";
-                                                        isUnavailable = true;
-                                                    } else {
-                                                        displayValue = `${feature.value} contactos`;
-                                                    }
-                                                } else if (
-                                                    feature.feature_code ===
-                                                    "max_memories"
-                                                ) {
-                                                    if (
-                                                        parseInt(
-                                                            feature.value,
-                                                            10
-                                                        ) === 0
-                                                    ) {
-                                                        displayValue =
-                                                            "No disponible";
-                                                        isUnavailable = true;
-                                                    } else {
-                                                        displayValue = `${feature.value} `;
-                                                    }
-                                                }
-
-                                                return (
-                                                    <li
-                                                        key={feature.id}
-                                                        className="flex items-center text-gray-700"
-                                                    >
-                                                        {isUnavailable ? (
-                                                            <svg
-                                                                className="w-6 h-6 text-red-500 mr-3"
-                                                                fill="currentColor"
-                                                                viewBox="0 0 20 20"
-                                                            >
-                                                                <path
-                                                                    fillRule="evenodd"
-                                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                                    clipRule="evenodd"
-                                                                ></path>
-                                                            </svg>
-                                                        ) : (
-                                                            <svg
-                                                                className="w-6 h-6 text-calm-green-500 mr-3"
-                                                                fill="currentColor"
-                                                                viewBox="0 0 20 20"
-                                                            >
-                                                                <path
-                                                                    fillRule="evenodd"
-                                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                                    clipRule="evenodd"
-                                                                ></path>
-                                                            </svg>
-                                                        )}
-                                                        <span className="font-medium">
-                                                            {featureName}:
-                                                        </span>{" "}
-                                                        {displayValue}
-                                                    </li>
-                                                );
-                                            })}
-                                        </ul>
-                                        <Link
-                                            href={route("register")} // Or a specific plan registration route
-                                            className="mt-auto block w-full text-center bg-calm-green-600 hover:bg-calm-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300"
+                                {plans.map((plan) => {
+                                    const planPrice = getPlanPrice(plan);
+                                    return (
+                                        <div
+                                            key={plan.id}
+                                            className="bg-white p-8 rounded-lg shadow-lg flex flex-col transform transition duration-300 hover:scale-105"
                                         >
-                                            Elegir Plan
-                                        </Link>
-                                    </div>
-                                ))}
+                                            <h3 className="text-2xl font-bold mb-4 text-calm-green-600">
+                                                {plan.name}
+                                            </h3>
+                                            <p className="text-4xl font-extrabold mb-4">
+                                                ${" "}
+                                                {Math.round(
+                                                    planPrice.price
+                                                ).toLocaleString("es-CL")}{" "}
+                                                CLP
+                                                <span className="text-lg font-medium text-gray-600">
+                                                    /{planPrice.period}
+                                                </span>
+                                            </p>
+                                            {planPrice.total && <p className="text-xs text-gray-500 mb-4">{planPrice.total}</p>}
+                                            <p className="text-gray-600 mb-6 flex-grow">
+                                                {plan.description}
+                                            </p>
+                                            <ul className="mb-6 space-y-3">
+                                                {plan.features.map((feature) => {
+                                                    let displayValue =
+                                                        feature.value;
+                                                    let featureName =
+                                                        featureTranslations[
+                                                            feature.feature_code
+                                                        ] || feature.feature_code;
+                                                    let isUnavailable = false;
+
+                                                    if (feature.value === "-1") {
+                                                        displayValue = "Ilimitado";
+                                                    } else if (
+                                                        feature.feature_code ===
+                                                        "video_recording"
+                                                    ) {
+                                                        if (
+                                                            feature.value ===
+                                                            "false"
+                                                        ) {
+                                                            displayValue = "No";
+                                                            isUnavailable = true;
+                                                        } else {
+                                                            displayValue = "Sí";
+                                                        }
+                                                    } else if (
+                                                        feature.feature_code ===
+                                                        "video_duration"
+                                                    ) {
+                                                        const duration = parseInt(
+                                                            feature.value,
+                                                            10
+                                                        );
+                                                        if (duration === 0) {
+                                                            displayValue =
+                                                                "No disponible";
+                                                            isUnavailable = true;
+                                                        } else if (
+                                                            duration % 60 ===
+                                                            0
+                                                        ) {
+                                                            displayValue = `${
+                                                                duration / 60
+                                                            } minutos`;
+                                                        } else {
+                                                            displayValue = `${duration} segundos`;
+                                                        }
+                                                    } else if (
+                                                        feature.feature_code ===
+                                                        "max_messages"
+                                                    ) {
+                                                        if (
+                                                            parseInt(
+                                                                feature.value,
+                                                                10
+                                                            ) === 0
+                                                        ) {
+                                                            displayValue =
+                                                                "No disponible";
+                                                            isUnavailable = true;
+                                                        } else {
+                                                            displayValue = `${feature.value} mensajes`;
+                                                        }
+                                                    } else if (
+                                                        feature.feature_code ===
+                                                        "max_documents"
+                                                    ) {
+                                                        if (
+                                                            parseInt(
+                                                                feature.value,
+                                                                10
+                                                            ) === 0
+                                                        ) {
+                                                            displayValue =
+                                                                "No disponible";
+                                                            isUnavailable = true;
+                                                        } else {
+                                                            displayValue = `${feature.value} documentos`;
+                                                        }
+                                                    } else if (
+                                                        feature.feature_code ===
+                                                        "max_trusted_contacts"
+                                                    ) {
+                                                        if (
+                                                            parseInt(
+                                                                feature.value,
+                                                                10
+                                                            ) === 0
+                                                        ) {
+                                                            displayValue =
+                                                                "No disponible";
+                                                            isUnavailable = true;
+                                                        } else {
+                                                            displayValue = `${feature.value} contactos`;
+                                                        }
+                                                    } else if (
+                                                        feature.feature_code ===
+                                                        "max_memories"
+                                                    ) {
+                                                        if (
+                                                            parseInt(
+                                                                feature.value,
+                                                                10
+                                                            ) === 0
+                                                        ) {
+                                                            displayValue =
+                                                                "No disponible";
+                                                            isUnavailable = true;
+                                                        } else {
+                                                            displayValue = `${feature.value} `;
+                                                        }
+                                                    }
+
+                                                    return (
+                                                        <li
+                                                            key={feature.id}
+                                                            className="flex items-center text-gray-700"
+                                                        >
+                                                            {isUnavailable ? (
+                                                                <svg
+                                                                    className="w-6 h-6 text-red-500 mr-3"
+                                                                    fill="currentColor"
+                                                                    viewBox="0 0 20 20"
+                                                                >
+                                                                    <path
+                                                                        fillRule="evenodd"
+                                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                                        clipRule="evenodd"
+                                                                    ></path>
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    className="w-6 h-6 text-calm-green-500 mr-3"
+                                                                    fill="currentColor"
+                                                                    viewBox="0 0 20 20"
+                                                                >
+                                                                    <path
+                                                                        fillRule="evenodd"
+                                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                                        clipRule="evenodd"
+                                                                    ></path>
+                                                                </svg>
+                                                            )}
+                                                            <span className="font-medium">
+                                                                {featureName}:
+                                                            </span>{" "}
+                                                            {displayValue}
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
+                                            <Link
+                                                href={route("register")} // Or a specific plan registration route
+                                                className="mt-auto block w-full text-center bg-calm-green-600 hover:bg-calm-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300"
+                                            >
+                                                Elegir Plan
+                                            </Link>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     </section>
