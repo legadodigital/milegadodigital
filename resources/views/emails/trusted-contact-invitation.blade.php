@@ -29,6 +29,7 @@
             <p>Si tienes alguna pregunta, no dudes en contactarnos.</p>
             <p>Saludos cordiales,</p>
             <p>El equipo de Mi Legado Virtual</p>
+            <p>Este ess un mensaje automático enviado desde Mi Legado Virtual</p>
         </div>
         <div class="footer">
             <p>&copy; {{ date('Y') }} Mi Legado Virtual. Todos los derechos reservados.</p>
