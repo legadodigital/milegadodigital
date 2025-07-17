@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+// import { Head, useForm } from '@inertiajs/react';
 import { Head, useForm } from '@inertiajs/react';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -10,7 +11,10 @@ export default function WishListIndex({ auth, wishListItems }) {
     const { data, setData, post, patch, delete: destroy, errors, reset } = useForm({
         description: '',
         completed: false,
+        completion_date: '',
     });
+
+    const { patch: patchCompletion } = useForm();
 
     const [editingItem, setEditingItem] = useState(null);
 
@@ -32,14 +36,16 @@ export default function WishListIndex({ auth, wishListItems }) {
 
     const handleEdit = (item) => {
         setEditingItem(item);
-        console.log('Item completion_date from backend:', item.completion_date);
-        setData({ description: item.description, completed: item.completed, completion_date: item.completion_date });
+        const formattedCompletionDate = item.completion_date ? format(parseISO(item.completion_date), 'yyyy-MM-dd') : '';
+        setData({ description: item.description, completed: item.completed, completion_date: formattedCompletionDate });
     };
 
     const handleToggleComplete = (item) => {
-        patch(route('wishlist.update', item.id), {
-            description: item.description,
-            completed: !item.completed,
+        const newCompletedStatus = !item.completed;
+        const newCompletionDate = newCompletedStatus ? new Date().toISOString().slice(0, 10) : null;
+        patchCompletion(route('wishlist.update', item.id), {
+            completed: newCompletedStatus,
+            completion_date: newCompletionDate,
         });
     };
 
