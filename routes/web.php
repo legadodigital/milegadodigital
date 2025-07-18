@@ -57,6 +57,7 @@ Route::get('/dashboard', function () {
         'ultimosDocumentos' => $ultimosDocumentos,
         'ultimosRecuerdos' => $ultimosRecuerdos,
         'planFeatures' => $planFeatures,
+        'proofOfLifeFrequencyDays' => $user->proof_of_life_frequency_days,
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
