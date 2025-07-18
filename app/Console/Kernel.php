@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         \Illuminate\Support\Facades\Log::info('Scheduler running at: ' . \Carbon\Carbon::now()->toDateTimeString() . ' (' . \Carbon\Carbon::now()->timezoneName . ')');
 
         $schedule->command(EnviarMensajesPostumos::class)->everyMinute();
+        $schedule->command('app:check-proof-of-life')->daily();
     }
 
     /**

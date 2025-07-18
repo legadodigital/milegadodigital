@@ -141,6 +141,12 @@ Route::middleware('auth')->group(function () {
             'videoDurationLimit' => (int)$videoDurationLimit,
         ]);
     })->name('video.recorder');
+
+    // Rutas para Prueba de Vida
+    Route::get('/prueba-de-vida/verificar', [App\Http\Controllers\ProofOfLifeController::class, 'showForm'])->name('proof-of-life.verify.form');
+    Route::post('/prueba-de-vida/verificar', [App\Http\Controllers\ProofOfLifeController::class, 'verifyCode'])->name('proof-of-life.verify.code');
+    Route::get('/prueba-de-vida/configuracion', [App\Http\Controllers\ProofOfLifeController::class, 'showSettings'])->name('proof-of-life.settings.show');
+    Route::patch('/prueba-de-vida/configuracion', [App\Http\Controllers\ProofOfLifeController::class, 'updateSettings'])->name('proof-of-life.settings.update');
 });
 
 require __DIR__.'/auth.php';
