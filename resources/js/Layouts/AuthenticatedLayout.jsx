@@ -5,6 +5,7 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import CookieConsent from '@/Components/CookieConsent';
+import { Alert } from '@mui/material';
 
 export default function AuthenticatedLayout({ header, children }) {
     const { auth } = usePage().props;
@@ -143,15 +144,15 @@ export default function AuthenticatedLayout({ header, children }) {
                                         >
                                             Actualizar Plan
                                         </Dropdown.Link>
-                                        {/* <Dropdown.Link
+                                        <Dropdown.Link
                                             href={route('profile.oneclick')}
                                         >
                                             Gestionar Oneclick
-                                        </Dropdown.Link> */}
-                                         <Dropdown.Link
+                                        </Dropdown.Link>
+                                        <Dropdown.Link
                                             href={route('proof-of-life.settings.show')}
                                         >
-                                            Actualizar Plan
+                                            Configuración Prueba de Vida
                                         </Dropdown.Link>
                                         <Dropdown.Link
                                             href={route('logout')}
@@ -257,6 +258,18 @@ export default function AuthenticatedLayout({ header, children }) {
                         >
                             Lista de Deseos
                         </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('proof-of-life.verify.form')}
+                            active={route().current('proof-of-life.verify.form')}
+                        >
+                            Verificar Prueba de Vida
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('proof-of-life.settings.show')}
+                            active={route().current('proof-of-life.settings.show')}
+                        >
+                            Configuración Prueba de Vida
+                        </ResponsiveNavLink>
                         {user.is_admin && (
                             <>
                                 <ResponsiveNavLink
@@ -313,6 +326,16 @@ export default function AuthenticatedLayout({ header, children }) {
                         {header}
                     </div>
                 </header>
+            )}
+
+            {user && user.proof_of_life_frequency_days === null && (
+                <div className="py-4">
+                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                        <Alert severity="warning">
+                            ¡Importante! No has configurado la frecuencia de tu prueba de vida. Por favor, <Link href={route('proof-of-life.settings.show')} className="underline">configúrala aquí</Link> para asegurar la continuidad de tu legado.
+                        </Alert>
+                    </div>
+                </div>
             )}
 
             <main>{children}</main>

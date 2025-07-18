@@ -92,7 +92,10 @@ Claro, si quisieras cancelar tu cuenta de Mi Legado Virtual solo debes avisarnos
 1. Regístrate en https://www.milegadovirtual.cl
 2. Completa tu perfil y agrega los datos que quieres dejar como legado
 3. Designa a las personas que recibirán tu legado
-4. Guarda y actualiza cuando sea necesario`;
+4. Guarda y actualiza cuando sea necesario
+11.- ¿Qué es la prueba de vida?
+La prueba de vida es un mecanismo para poder confirmar que aún estas entre nosotros, podrás configurar cada cuanto tiempo requieres que solicitemos esta prueba de vida, si dentro de los 15 días posteriores no tenemos respuesta un Correo será enviado a tus contactos de confianza`;
+
 
         const parseFaq = (text) => {
     const lines = text.split('\n').map(line => line.trim());
