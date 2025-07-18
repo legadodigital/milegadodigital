@@ -147,4 +147,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(WishListItem::class);
     }
+
+    /**
+     * Get the proof of life codes for the user.
+     */
+    public function proofOfLifeCodes(): HasMany
+    {
+        return $this->hasMany(ProofOfLifeCode::class);
+    }
 }

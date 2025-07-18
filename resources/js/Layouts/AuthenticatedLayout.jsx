@@ -67,11 +67,17 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Grabar Video
                                 </NavLink>
                                 <NavLink
-                                    href={route('wishlist.index')}
-                                    active={route().current('wishlist.index')}
-                                >
-                                    Lista de Deseos
-                                </NavLink>
+                                     href={route('wishlist.index')}
+                                     active={route().current('wishlist.index')}
+                                 >
+                                     Lista de Deseos
+                                 </NavLink>
+                                 <NavLink
+                                     href={route('proof-of-life.verify.form')}
+                                     active={route().current('proof-of-life.verify.form')}
+                                 >
+                                     Verificar Prueba de Vida
+                                 </NavLink>
                                 {user.is_admin && (
                                     <>
                                         <NavLink
@@ -137,10 +143,15 @@ export default function AuthenticatedLayout({ header, children }) {
                                         >
                                             Actualizar Plan
                                         </Dropdown.Link>
-                                        <Dropdown.Link
+                                        {/* <Dropdown.Link
                                             href={route('profile.oneclick')}
                                         >
                                             Gestionar Oneclick
+                                        </Dropdown.Link> */}
+                                         <Dropdown.Link
+                                            href={route('proof-of-life.settings.show')}
+                                        >
+                                            Actualizar Plan
                                         </Dropdown.Link>
                                         <Dropdown.Link
                                             href={route('logout')}
