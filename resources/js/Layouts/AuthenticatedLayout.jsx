@@ -144,11 +144,11 @@ export default function AuthenticatedLayout({ header, children }) {
                                         >
                                             Actualizar Plan
                                         </Dropdown.Link>
-                                        <Dropdown.Link
+                                        {/* <Dropdown.Link
                                             href={route('profile.oneclick')}
                                         >
                                             Gestionar Oneclick
-                                        </Dropdown.Link>
+                                        </Dropdown.Link> */}
                                         <Dropdown.Link
                                             href={route('proof-of-life.settings.show')}
                                         >
