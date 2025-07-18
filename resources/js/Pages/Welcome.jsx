@@ -1,7 +1,47 @@
 import { Link, Head } from "@inertiajs/react";
 import ApplicationLogo from "@/Components/ApplicationLogo"; // Import the ApplicationLogo component
-import { useState } from 'react';
+import { useState, useEffect } from "react";
 
+const AccordionItem = ({ title, content, isOpen, onClick }) => {
+    return (
+        <div className="border border-gray-200 rounded-lg shadow-sm">
+            <button
+                className="flex justify-between items-center w-full p-5 text-lg font-semibold text-left text-gray-800 bg-white hover:bg-gray-50 focus:outline-none"
+                onClick={onClick}
+            >
+                {title}
+                <svg
+                    className={`w-6 h-6 transform transition-transform duration-300 ${
+                        isOpen ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                    ></path>
+                </svg>
+            </button>
+            {isOpen && (
+                <div className="p-5 pt-0 text-gray-600 bg-white">
+                    <p dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, "<br>") }} />
+                </div>
+            )}
+        </div>
+    );
+};
+function parseLinks(text) {
+    return text.replace(
+        /(https?:\/\/[^\s]+)/g,
+        (url) =>
+            `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline">${url}</a>`
+    );
+}
 export default function Welcome({ auth, plans }) {
     const featureTranslations = {
         max_messages: "Cantidad de Mensajes",
@@ -12,25 +52,110 @@ export default function Welcome({ auth, plans }) {
         max_memories: "Recuerdos",
     };
 
-    const [billingCycle, setBillingCycle] = useState('monthly');
+    const [billingCycle, setBillingCycle] = useState("monthly");
+    const [openAccordion, setOpenAccordion] = useState(null);
+    const [faqData, setFaqData] = useState([]);
+
+    useEffect(() => {
+        const faqContent = `Preguntas Frecuentes
+1.- ¿Qué es Mi Legado Virtual?
+Mi Legado Virtual** es una plataforma que permite planificar y gestionar el destino de tus cuentas digitales, activos virtuales y mensajes personales después de tu fallecimiento.
+Con esta herramienta, puedes asegurarte de que tus seres queridos tengan acceso a lo que tú decidas, de forma segura y respetuosa.
+2.- ¿Qué tipo de información puedo guardar?
+Puedes registrar:
+- Mensajes personales para tus familiares o amigos, para ser entregados en la fecha que programes.
+- Documentos digitales relevantes: Seguros, información de propiedades o de otros bienes, datos relevantes que merecen ser resguardados
+- Contactos de confianza: Define quién o quiénes tendrán el acceso a tu información privada, en caso de ser necesario.
+- Recuerdos de momentos importantes en tu vida
+- Lista de Deseos: Agrega todas esas cosas, deseos y objetivos que te gustaría lograr, y registra la fecha de cuando los cumplas.
+3.- ¿Cómo empiezo a crear mi legado?
+1. Regístrate en https://www.milegadovirtual.cl
+2. Completa tu perfil y agrega los datos que quieres dejar como legado
+3. Designa a las personas que recibirán tu legado
+4. Guarda y actualiza cuando sea necesario
+4.- ¿Cómo funciona el proceso de entrega del legado?
+Cuando tú lo autorices (por ejemplo, al fallecer), el sistema notifica a los contactos designados.
+Estos deberán verificar su identidad y, una vez confirmados, recibirán el acceso a los datos que tú hayas dejado preparados.
+5.- ¿Puedo actualizar mi legado después de crearlo?
+Sí, puedes **editar y actualizar tu legado en cualquier momento**. Simplemente inicia sesión en tu cuenta y realiza los cambios necesarios.
+Es recomendable actualizar tu legado cada cierto tiempo, especialmente después de cambios importantes en tu vida.
+6.- ¿Qué pasa si no tengo un legado digital planificado?
+Sin un legado digital planificado, tus seres queridos pueden tener dificultades para acceder a tus cuentas o gestionar tus activos virtuales.
+Esto puede generar frustraciones, pérdidas de información importante o conflictos familiares. Mi Legado Virtual ayuda a evitar esto.
+7.- ¿Cuánto cuesta usar Mi Legado Virtual?
+Ofrecemos planes gratuitos (prueba por 30 días) y pagados, de diferentes valores dependiendo de tus necesidades de más almacenamiento, más contactos designados y funciones avanzadas.
+8.- ¿Puedo confiar en que mi información no será compartida?
+Totalmente. Tu información es **confidencial y solo será compartida con las personas que tú autorices**. No compartimos tus datos con terceros sin tu consentimiento.
+9.- ¿Puedo cancelar mi plan?
+Claro, si quisieras cancelar tu cuenta de Mi Legado Virtual solo debes avisarnos, descargar tu información y luego procederemos a eliminar todos tus datos de nuestro sitio.
+10.- ¿Cómo empiezo a crear mi legado?
+1. Regístrate en https://www.milegadovirtual.cl
+2. Completa tu perfil y agrega los datos que quieres dejar como legado
+3. Designa a las personas que recibirán tu legado
+4. Guarda y actualiza cuando sea necesario`;
+
+        const parseFaq = (text) => {
+    const lines = text.split('\n').map(line => line.trim());
+    const faqs = [];
+    let currentQuestion = null;
+    let currentAnswerLines = [];
+
+    for (let line of lines) {
+        // Detectar preguntas con formato: "1.- ¿Pregunta?"
+        const questionMatch = line.match(/^(\d+|-)\.-\s*(.+)/);
+
+        if (questionMatch) {
+            // Si ya había una pregunta, la guardamos
+            if (currentQuestion && currentAnswerLines.length > 0) {
+                faqs.push({
+                    question: currentQuestion,
+                    answer: currentAnswerLines.join('\n').trim().replace(/\*\*/g, '')
+                });
+                currentAnswerLines = [];
+            }
+            currentQuestion = questionMatch[2]; // Extraemos solo la pregunta
+        } else if (line !== '') {
+            // Si hay contenido y no es vacío, lo agregamos a la respuesta
+            currentAnswerLines.push(line);
+        }
+    }
+
+    // Guardamos la última pregunta si queda pendiente
+    if (currentQuestion && currentAnswerLines.length > 0) {
+        faqs.push({
+            question: currentQuestion,
+            answer: currentAnswerLines.join('\n').trim().replace(/\*\*/g, '')
+        });
+    }
+
+    return faqs;
+};
+
+        setFaqData(parseFaq(faqContent));
+    }, []);
 
     const calculateAnnualPrice = (plan) => {
         const monthlyPrice = parseFloat(plan.price);
         const discount = parseFloat(plan.annual_discount_percentage);
-        const annualPrice = (monthlyPrice * 12 * (1 - discount / 100));
+        const annualPrice = monthlyPrice * 12 * (1 - discount / 100);
         return annualPrice.toFixed(2);
     };
 
     const getPlanPrice = (plan) => {
-        if (billingCycle === 'annually' && plan.annual_discount_percentage > 0) {
+        if (
+            billingCycle === "annually" &&
+            plan.annual_discount_percentage > 0
+        ) {
             const annualPrice = calculateAnnualPrice(plan);
             return {
                 price: (annualPrice / 12).toFixed(2),
-                period: 'mes (pago anual)',
-                total: `Total Anual: ${Math.round(annualPrice).toLocaleString("es-CL")} CLP`
+                period: "mes (pago anual)",
+                total: `Total Anual: ${Math.round(annualPrice).toLocaleString(
+                    "es-CL"
+                )} CLP`,
             };
         }
-        return { price: plan.price, period: 'mes' };
+        return { price: plan.price, period: "mes" };
     };
 
     return (
@@ -77,6 +202,12 @@ export default function Welcome({ auth, plans }) {
                                 className="hover:text-calm-green-200 transition duration-300"
                             >
                                 Testimonios
+                            </a>
+                            <a
+                                href="#preguntas-frecuentes"
+                                className="hover:text-calm-green-200 transition duration-300"
+                            >
+                                Preguntas Frecuentes
                             </a>
                             <a
                                 href="#contactenos"
@@ -278,6 +409,9 @@ export default function Welcome({ auth, plans }) {
                                         Designa a las personas que gestionarán
                                         tu Legado Virtual.
                                     </p>
+                                    <p className="text-gray-600">
+                                        Tus Contactos .
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -292,14 +426,28 @@ export default function Welcome({ auth, plans }) {
                                 ¿Qué Sueños Quieres Dejar Cumplidos?
                             </h2>
                             <p className="text-lg leading-relaxed max-w-3xl mx-auto mb-8">
-                                La vida es un lienzo en blanco, y cada día una oportunidad  para pintar nuestros sueños más profundos. En Mi Legado Virtual, no solo te ayudamos a preservar tu memoria, sino también a dar vida a tus aspiraciones. Crea tu "Lista de Deseos": esos anhelos, metas y experiencias que siempre quisiste vivir. Desde aprender un nuevo idioma hasta visitar un lugar soñado, cada deseo es un paso hacia una vida plena.
+                                La vida es un lienzo en blanco, y cada día una
+                                oportunidad para pintar nuestros sueños más
+                                profundos. En Mi Legado Virtual, no solo te
+                                ayudamos a preservar tu memoria, sino también a
+                                dar vida a tus aspiraciones. Crea tu "Lista de
+                                Deseos": esos anhelos, metas y experiencias que
+                                siempre quisiste vivir. Desde aprender un nuevo
+                                idioma hasta visitar un lugar soñado, cada deseo
+                                es un paso hacia una vida plena.
                             </p>
                             <p className="text-lg leading-relaxed max-w-3xl mx-auto mb-8">
-                                Imagina la satisfacción de tachar cada deseo, sabiendo que estás construyendo un legado no solo de recuerdos, sino de una vida vivida al máximo. Y si el tiempo te sorprende, tus seres queridos encontrarán en esta lista un mapa de tus pasiones, una inspiración para continuar tu viaje, y la certeza de que cada día fue una búsqueda de la felicidad
+                                Imagina la satisfacción de tachar cada deseo,
+                                sabiendo que estás construyendo un legado no
+                                solo de recuerdos, sino de una vida vivida al
+                                máximo. Y si el tiempo te sorprende, tus seres
+                                queridos encontrarán en esta lista un mapa de
+                                tus pasiones, una inspiración para continuar tu
+                                viaje, y la certeza de que cada día fue una
+                                búsqueda de la felicidad
                             </p>
                             <Link
                                 href={route("register")}
-
                                 className="inline-block px-8 py-3 bg-calm-green-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-calm-green-700 transition duration-300 transform hover:scale-105"
                             >
                                 Empieza a Soñar en Grande
@@ -459,19 +607,37 @@ export default function Welcome({ auth, plans }) {
                             </div>
 
                             <div className="my-8 flex items-center justify-center">
-                                <span className={`mr-3 text-sm font-medium ${billingCycle === 'monthly' ? 'text-gray-900' : 'text-gray-500'}`}>
+                                <span
+                                    className={`mr-3 text-sm font-medium ${
+                                        billingCycle === "monthly"
+                                            ? "text-gray-900"
+                                            : "text-gray-500"
+                                    }`}
+                                >
                                     Pago Mensual
                                 </span>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input
                                         type="checkbox"
                                         className="sr-only peer"
-                                        checked={billingCycle === 'annually'}
-                                        onChange={() => setBillingCycle(billingCycle === 'monthly' ? 'annually' : 'monthly')}
+                                        checked={billingCycle === "annually"}
+                                        onChange={() =>
+                                            setBillingCycle(
+                                                billingCycle === "monthly"
+                                                    ? "annually"
+                                                    : "monthly"
+                                            )
+                                        }
                                     />
                                     <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                 </label>
-                                <span className={`ml-3 text-sm font-medium ${billingCycle === 'annually' ? 'text-gray-900' : 'text-gray-500'}`}>
+                                <span
+                                    className={`ml-3 text-sm font-medium ${
+                                        billingCycle === "annually"
+                                            ? "text-gray-900"
+                                            : "text-gray-500"
+                                    }`}
+                                >
                                     Pago Anual
                                     <span className="text-xs text-green-600 ml-1">
                                         (Ahorra hasta 15%)
@@ -500,160 +666,182 @@ export default function Welcome({ auth, plans }) {
                                                     /{planPrice.period}
                                                 </span>
                                             </p>
-                                            {planPrice.total && <p className="text-xs text-gray-500 mb-4">{planPrice.total}</p>}
+                                            {planPrice.total && (
+                                                <p className="text-xs text-gray-500 mb-4">
+                                                    {planPrice.total}
+                                                </p>
+                                            )}
                                             <p className="text-gray-600 mb-6 flex-grow">
                                                 {plan.description}
                                             </p>
                                             <ul className="mb-6 space-y-3">
-                                                {plan.features.map((feature) => {
-                                                    let displayValue =
-                                                        feature.value;
-                                                    let featureName =
-                                                        featureTranslations[
-                                                            feature.feature_code
-                                                        ] || feature.feature_code;
-                                                    let isUnavailable = false;
+                                                {plan.features.map(
+                                                    (feature) => {
+                                                        let displayValue =
+                                                            feature.value;
+                                                        let featureName =
+                                                            featureTranslations[
+                                                                feature
+                                                                    .feature_code
+                                                            ] ||
+                                                            feature.feature_code;
+                                                        let isUnavailable = false;
 
-                                                    if (feature.value === "-1") {
-                                                        displayValue = "Ilimitado";
-                                                    } else if (
-                                                        feature.feature_code ===
-                                                        "video_recording"
-                                                    ) {
                                                         if (
                                                             feature.value ===
-                                                            "false"
+                                                            "-1"
                                                         ) {
-                                                            displayValue = "No";
-                                                            isUnavailable = true;
-                                                        } else {
-                                                            displayValue = "Sí";
-                                                        }
-                                                    } else if (
-                                                        feature.feature_code ===
-                                                        "video_duration"
-                                                    ) {
-                                                        const duration = parseInt(
-                                                            feature.value,
-                                                            10
-                                                        );
-                                                        if (duration === 0) {
                                                             displayValue =
-                                                                "No disponible";
-                                                            isUnavailable = true;
+                                                                "Ilimitado";
                                                         } else if (
-                                                            duration % 60 ===
-                                                            0
+                                                            feature.feature_code ===
+                                                            "video_recording"
                                                         ) {
-                                                            displayValue = `${
-                                                                duration / 60
-                                                            } minutos`;
-                                                        } else {
-                                                            displayValue = `${duration} segundos`;
-                                                        }
-                                                    } else if (
-                                                        feature.feature_code ===
-                                                        "max_messages"
-                                                    ) {
-                                                        if (
-                                                            parseInt(
-                                                                feature.value,
-                                                                10
-                                                            ) === 0
+                                                            if (
+                                                                feature.value ===
+                                                                "false"
+                                                            ) {
+                                                                displayValue =
+                                                                    "No";
+                                                                isUnavailable = true;
+                                                            } else {
+                                                                displayValue =
+                                                                    "Sí";
+                                                            }
+                                                        } else if (
+                                                            feature.feature_code ===
+                                                            "video_duration"
                                                         ) {
-                                                            displayValue =
-                                                                "No disponible";
-                                                            isUnavailable = true;
-                                                        } else {
-                                                            displayValue = `${feature.value} mensajes`;
-                                                        }
-                                                    } else if (
-                                                        feature.feature_code ===
-                                                        "max_documents"
-                                                    ) {
-                                                        if (
-                                                            parseInt(
-                                                                feature.value,
-                                                                10
-                                                            ) === 0
+                                                            const duration =
+                                                                parseInt(
+                                                                    feature.value,
+                                                                    10
+                                                                );
+                                                            if (
+                                                                duration === 0
+                                                            ) {
+                                                                displayValue =
+                                                                    "No disponible";
+                                                                isUnavailable = true;
+                                                            } else if (
+                                                                duration %
+                                                                    60 ===
+                                                                0
+                                                            ) {
+                                                                displayValue = `${
+                                                                    duration /
+                                                                    60
+                                                                } minutos`;
+                                                            } else {
+                                                                displayValue = `${duration} segundos`;
+                                                            }
+                                                        } else if (
+                                                            feature.feature_code ===
+                                                            "max_messages"
                                                         ) {
-                                                            displayValue =
-                                                                "No disponible";
-                                                            isUnavailable = true;
-                                                        } else {
-                                                            displayValue = `${feature.value} documentos`;
-                                                        }
-                                                    } else if (
-                                                        feature.feature_code ===
-                                                        "max_trusted_contacts"
-                                                    ) {
-                                                        if (
-                                                            parseInt(
-                                                                feature.value,
-                                                                10
-                                                            ) === 0
+                                                            if (
+                                                                parseInt(
+                                                                    feature.value,
+                                                                    10
+                                                                ) === 0
+                                                            ) {
+                                                                displayValue =
+                                                                    "No disponible";
+                                                                isUnavailable = true;
+                                                            } else {
+                                                                displayValue = `${feature.value} mensajes`;
+                                                            }
+                                                        } else if (
+                                                            feature.feature_code ===
+                                                            "max_documents"
                                                         ) {
-                                                            displayValue =
-                                                                "No disponible";
-                                                            isUnavailable = true;
-                                                        } else {
-                                                            displayValue = `${feature.value} contactos`;
-                                                        }
-                                                    } else if (
-                                                        feature.feature_code ===
-                                                        "max_memories"
-                                                    ) {
-                                                        if (
-                                                            parseInt(
-                                                                feature.value,
-                                                                10
-                                                            ) === 0
+                                                            if (
+                                                                parseInt(
+                                                                    feature.value,
+                                                                    10
+                                                                ) === 0
+                                                            ) {
+                                                                displayValue =
+                                                                    "No disponible";
+                                                                isUnavailable = true;
+                                                            } else {
+                                                                displayValue = `${feature.value} documentos`;
+                                                            }
+                                                        } else if (
+                                                            feature.feature_code ===
+                                                            "max_trusted_contacts"
                                                         ) {
-                                                            displayValue =
-                                                                "No disponible";
-                                                            isUnavailable = true;
-                                                        } else {
-                                                            displayValue = `${feature.value} `;
+                                                            if (
+                                                                parseInt(
+                                                                    feature.value,
+                                                                    10
+                                                                ) === 0
+                                                            ) {
+                                                                displayValue =
+                                                                    "No disponible";
+                                                                isUnavailable = true;
+                                                            } else {
+                                                                displayValue = `${feature.value} contactos`;
+                                                            }
+                                                        } else if (
+                                                            feature.feature_code ===
+                                                            "max_memories"
+                                                        ) {
+                                                            if (
+                                                                parseInt(
+                                                                    feature.value,
+                                                                    10
+                                                                ) === 0
+                                                            ) {
+                                                                displayValue =
+                                                                    "No disponible";
+                                                                isUnavailable = true;
+                                                            } else {
+                                                                displayValue = `${feature.value} `;
+                                                            }
                                                         }
-                                                    }
 
-                                                    return (
-                                                        <li
-                                                            key={feature.id}
-                                                            className="flex items-center text-gray-700"
-                                                        >
-                                                            {isUnavailable ? (
-                                                                <svg
-                                                                    className="w-6 h-6 text-red-500 mr-3"
-                                                                    fill="currentColor"
-                                                                    viewBox="0 0 20 20"
-                                                                >
-                                                                    <path
-                                                                        fillRule="evenodd"
-                                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                                        clipRule="evenodd"
-                                                                    ></path>
-                                                                </svg>
-                                                            ) : (
-                                                                <svg
-                                                                    className="w-6 h-6 text-calm-green-500 mr-3"
-                                                                    fill="currentColor"
-                                                                    viewBox="0 0 20 20"
-                                                                >
-                                                                    <path
-                                                                        fillRule="evenodd"
-                                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                                        clipRule="evenodd"
-                                                                    ></path>
-                                                                </svg>
-                                                            )}
-                                                            <span className="font-medium">
-                                                                {featureName}:
-                                                            </span>{" "}
-                                                            {displayValue}
-                                                        </li>
-                                                    );
-                                                })}
+                                                        return (
+                                                            <li
+                                                                key={feature.id}
+                                                                className="flex items-center text-gray-700"
+                                                            >
+                                                                {isUnavailable ? (
+                                                                    <svg
+                                                                        className="w-6 h-6 text-red-500 mr-3"
+                                                                        fill="currentColor"
+                                                                        viewBox="0 0 20 20"
+                                                                    >
+                                                                        <path
+                                                                            fillRule="evenodd"
+                                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                                            clipRule="evenodd"
+                                                                        ></path>
+                                                                    </svg>
+                                                                ) : (
+                                                                    <svg
+                                                                        className="w-6 h-6 text-calm-green-500 mr-3"
+                                                                        fill="currentColor"
+                                                                        viewBox="0 0 20 20"
+                                                                    >
+                                                                        <path
+                                                                            fillRule="evenodd"
+                                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                                            clipRule="evenodd"
+                                                                        ></path>
+                                                                    </svg>
+                                                                )}
+                                                                <span className="font-medium">
+                                                                    {
+                                                                        featureName
+                                                                    }
+                                                                    :
+                                                                </span>{" "}
+                                                                {displayValue}
+                                                            </li>
+                                                        );
+                                                    }
+                                                )}
                                             </ul>
                                             <Link
                                                 href={route("register")} // Or a specific plan registration route
@@ -667,7 +855,35 @@ export default function Welcome({ auth, plans }) {
                             </div>
                         </div>
                     </section>
-                    {/* Contactenos Section */}
+                    {/* Preguntas Frecuentes Section */}
+                    <section
+                        id="preguntas-frecuentes"
+                        className="py-16 bg-calm-green-100 text-gray-800"
+                    >
+                        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                            <h2 className="text-4xl font-bold text-center mb-12">
+                                Preguntas Frecuentes
+                            </h2>
+                            <div className="space-y-4">
+                                {faqData.map((faq, index) => (
+                                    <AccordionItem
+                                        key={index}
+                                        title={faq.question}
+                                        content={faq.answer}
+                                        isOpen={openAccordion === index}
+                                        onClick={() =>
+                                            setOpenAccordion(
+                                                openAccordion === index
+                                                    ? null
+                                                    : index
+                                            )
+                                        }
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                    {/* Contacto */}
                     <section
                         id="contactenos"
                         className="py-16 bg-calm-green-50 text-gray-800"
