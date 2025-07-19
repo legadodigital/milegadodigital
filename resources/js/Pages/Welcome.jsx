@@ -57,9 +57,10 @@ export default function Welcome({ auth, plans }) {
     const [faqData, setFaqData] = useState([]);
 
     useEffect(() => {
-        const faqContent = `Preguntas Frecuentes
+        const faqContent = `
 1.- ¿Qué es Mi Legado Virtual?
-Mi Legado Virtual** es una plataforma que permite planificar y gestionar el destino de tus cuentas digitales, activos virtuales y mensajes personales después de tu fallecimiento.
+Mi Legado Virtual
+Es una plataforma que permite planificar y gestionar el destino de mensajes que quieras enviar a tus seres queridos, documentos digitales, activos virtuales y mensajes personales después de tu fallecimiento.
 Con esta herramienta, puedes asegurarte de que tus seres queridos tengan acceso a lo que tú decidas, de forma segura y respetuosa.
 2.- ¿Qué tipo de información puedo guardar?
 Puedes registrar:
@@ -79,8 +80,8 @@ Estos deberán verificar su identidad y, una vez confirmados, recibirán el acce
 5.- ¿Puedo actualizar mi legado después de crearlo?
 Sí, puedes **editar y actualizar tu legado en cualquier momento**. Simplemente inicia sesión en tu cuenta y realiza los cambios necesarios.
 Es recomendable actualizar tu legado cada cierto tiempo, especialmente después de cambios importantes en tu vida.
-6.- ¿Qué pasa si no tengo un legado digital planificado?
-Sin un legado digital planificado, tus seres queridos pueden tener dificultades para acceder a tus cuentas o gestionar tus activos virtuales.
+6.- ¿Qué pasa si no tengo un legado virtual planificado?
+Sin un legado virtual planificado, tus seres queridos pueden tener dificultades para acceder a tus cuentas o gestionar tus activos virtuales.
 Esto puede generar frustraciones, pérdidas de información importante o conflictos familiares. Mi Legado Virtual ayuda a evitar esto.
 7.- ¿Cuánto cuesta usar Mi Legado Virtual?
 Ofrecemos planes gratuitos (prueba por 30 días) y pagados, de diferentes valores dependiendo de tus necesidades de más almacenamiento, más contactos designados y funciones avanzadas.
