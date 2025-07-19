@@ -271,7 +271,7 @@ La prueba de vida es un mecanismo para poder confirmar que aún estas entre noso
                             </h1>
                             <p className="text-xl md:text-2xl mb-8 animate-fade-in-up animation-delay-200">
                                 En Mi Legado Virtual, te ofrecemos un espacio
-                                sagrado y seguro para que puedas dejar mensajes
+                                privado y seguro para que puedas dejar mensajes
                                 póstumos, videos llenos de amor y documentos
                                 importantes a tus seres queridos. Nuestra misión
                                 es que tu voz, tus recuerdos y tu voluntad
@@ -297,33 +297,7 @@ La prueba de vida es un mecanismo para poder confirmar que aún estas entre noso
                                 ¿Qué puedes hacer con Mi Legado Virtual?
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                {/* Feature 1: Mensajes Póstumos */}
-                                <div className="bg-white p-8 rounded-lg shadow-lg transform transition duration-300 hover:scale-105">
-                                    <div className="text-calm-green-600 mb-4">
-                                        {/* Placeholder Icon: Letter */}
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-12 w-12 mx-auto"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <h3 className="text-xl font-semibold mb-2">
-                                        Mensajes Póstumos
-                                    </h3>
-                                    <p className="text-gray-600">
-                                        Programa mensajes de despedida o de amor
-                                        para ser entregados en el futuro.
-                                    </p>
-                                </div>
+
 
                                 {/* Feature 2: Recuerdos Virtuales */}
                                 <div className="bg-white p-8 rounded-lg shadow-lg transform transition duration-300 hover:scale-105">
@@ -385,7 +359,33 @@ La prueba de vida es un mecanismo para poder confirmar que aún estas entre noso
                                         vitales y decide quién tendrá acceso.
                                     </p>
                                 </div>
-
+                                 {/* Feature 1: Mensajes Póstumos */}
+                                <div className="bg-white p-8 rounded-lg shadow-lg transform transition duration-300 hover:scale-105">
+                                    <div className="text-calm-green-600 mb-4">
+                                        {/* Placeholder Icon: Letter */}
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-12 w-12 mx-auto"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-xl font-semibold mb-2">
+                                        Mensajes para el futuro o cuando ya no estés
+                                    </h3>
+                                    <p className="text-gray-600">
+                                        Programa mensajes de amor y consejos
+                                        para ser entregados en el futuro a aquellos que más amas.
+                                    </p>
+                                </div>
                                 {/* Feature 4: Contactos de Confianza */}
                                 <div className="bg-white p-8 rounded-lg shadow-lg transform transition duration-300 hover:scale-105">
                                     <div className="text-earthy-green-600 mb-4">
