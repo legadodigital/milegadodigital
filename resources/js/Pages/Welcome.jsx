@@ -602,6 +602,9 @@ La prueba de vida es un mecanismo para poder confirmar que aún estas entre noso
                             <h2 className="text-4xl font-bold text-center mb-12">
                                 Nuestros Planes
                             </h2>
+                            <p className="text-lg text-center text-gray-700 mb-8">
+                                Las características de cada plan se recargan mensualmente con cada pago.
+                            </p>
                             <div className="flex justify-center mb-8">
                                 <img
                                     src="/img/webpay-logo-plus.jpg"

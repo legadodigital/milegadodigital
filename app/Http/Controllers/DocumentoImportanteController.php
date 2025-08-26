@@ -6,9 +6,12 @@ use App\Models\DocumentoImportante;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\HasUsageTracking;
 
 class DocumentoImportanteController extends Controller
 {
+    use HasUsageTracking;
+
     /**
      * Display a listing of the resource.
      */
@@ -35,7 +38,7 @@ class DocumentoImportanteController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->is_admin && !$user->canUploadDocument()) {
+        if (!$this->canPerformAction($user, 'max_documents')) {
             return redirect()->back()->withErrors(['limit' => 'Has alcanzado el límite de documentos importantes para tu plan.']);
         }
 
@@ -70,6 +73,8 @@ class DocumentoImportanteController extends Controller
             'is_encrypted' => false, // Por ahora, asumimos que no está encriptado al subir
             'encryption_key' => null,
         ]);
+
+        $this->incrementUsage($user, 'max_documents');
 
         return redirect()->route('documentos-importantes.index')->with('success', 'Documento creado exitosamente.');
     }
