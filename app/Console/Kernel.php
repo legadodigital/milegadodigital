@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command(EnviarMensajesPostumos::class)->everyMinute();
         $schedule->command('app:check-proof-of-life')->daily();
+        $schedule->command('usage:reset-monthly')->monthly();
     }
 
     /**
@@ -24,6 +25,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\EnviarMensajesPostumos::class,
+    \App\Console\Commands\ResetMonthlyUsage::class,
     ];
 
     /**

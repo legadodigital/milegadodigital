@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
 use Inertia\Inertia;
+use App\Services\UsageResetService;
 
 class TransbankController extends Controller
 {
@@ -185,6 +186,9 @@ class TransbankController extends Controller
                 $paymentData['user_id'] = $user->id;
                 Payment::create($paymentData);
 
+                // Reset usage counters
+                (new UsageResetService())->resetUsageForUser($user);
+
                 return Inertia::render('PaymentSuccess', [
                     'message' => '¡Pago exitoso! Tu plan ha sido activado y tu cuenta creada.',
                     'response' => $response,
@@ -199,6 +203,9 @@ class TransbankController extends Controller
                     $paymentData['user_id'] = $user->id;
                     Payment::create($paymentData);
 
+                    // Reset usage counters
+                    (new UsageResetService())->resetUsageForUser($user);
+
                     return Inertia::render('PaymentSuccess', [
                         'message' => '¡Pago exitoso! Tu plan ha sido actualizado.',
                         'response' => $response,
@@ -207,6 +214,9 @@ class TransbankController extends Controller
             } else if (Auth::check()) {
                 $paymentData['user_id'] = Auth::id();
                 Payment::create($paymentData);
+
+                // Reset usage counters
+                (new UsageResetService())->resetUsageForUser(Auth::user());
 
                 return Inertia::render('PaymentSuccess', [
                     'message' => '¡Pago exitoso!',
@@ -332,6 +342,9 @@ class TransbankController extends Controller
                     'card_number' => $response->getCardNumber(),
                     'transaction_date' => now(),
                 ]);
+
+                // Reset usage counters
+                (new UsageResetService())->resetUsageForUser($user);
 
                 $user->plan_id = $plan->id;
                 $user->save();

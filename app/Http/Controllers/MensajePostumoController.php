@@ -6,9 +6,11 @@ use App\Models\MensajePostumo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\HasUsageTracking;
 
 class MensajePostumoController extends Controller
 {
+    use HasUsageTracking;
     /**
      * Display a listing of the resource.
      */
@@ -35,7 +37,7 @@ class MensajePostumoController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->is_admin && !$user->canCreateMessage()) {
+        if (!$this->canPerformAction($user, 'max_messages')) {
             return redirect()->back()->withErrors(['limit' => 'Has alcanzado el límite de mensajes póstumos para tu plan.']);
         }
 
@@ -81,6 +83,8 @@ class MensajePostumoController extends Controller
             'tipo_archivo_media' => $tipoArchivoMedia,
             'estado' => 'pendiente',
         ]);
+
+        $this->incrementUsage($user, 'max_messages');
 
         return redirect()->route('mensajes-postumos.index')->with('success', 'Mensaje póstumo creado exitosamente.');
     }
