@@ -7,9 +7,12 @@ use App\Models\RecuerdoMedia;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\HasUsageTracking;
 
 class RecuerdoController extends Controller
 {
+    use HasUsageTracking;
+
     /**
      * Display a listing of the resource.
      */
@@ -36,16 +39,8 @@ class RecuerdoController extends Controller
     {
         $user = auth()->user();
 
-        // Bypass plan limits if user is admin
-        if ($user->is_admin) {
-            // Admin can create unlimited memories
-        } else {
-            $plan = $user->plan->load('features');
-            $maxMemories = $plan->features->where('feature_code', 'max_memories')->first()->value ?? 0;
-
-            if ($maxMemories !== 'ilimitado' && $user->recuerdos()->count() >= (int)$maxMemories) {
-                return redirect()->back()->withErrors(['limit' => 'Has alcanzado el límite de recuerdos para tu plan.']);
-            }
+        if (!$this->canPerformAction($user, 'max_memories')) {
+            return redirect()->back()->withErrors(['limit' => 'Has alcanzado el límite de recuerdos para tu plan.']);
         }
 
         $validated = $request->validate([
@@ -66,6 +61,8 @@ class RecuerdoController extends Controller
             'fecha_recuerdo' => $validated['fecha_recuerdo'],
             'visibilidad' => $validated['visibilidad'],
         ]);
+
+        $this->incrementUsage($user, 'max_memories');
 
         if ($request->hasFile('archivos')) {
             foreach ($request->file('archivos') as $file) {

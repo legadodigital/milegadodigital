@@ -22,33 +22,6 @@ trait HasPlanFeatures
         return $feature ? $feature->value : null;
     }
 
-    public function canCreateMessage(): bool
-    {
-        $maxMessages = $this->getPlanFeatureValue('max_messages');
-        if ($maxMessages === '-1') {
-            return true; // Unlimited
-        }
-        return $this->mensajesPostumos()->count() < $maxMessages;
-    }
-
-    public function canUploadDocument(): bool
-    {
-        $maxDocuments = $this->getPlanFeatureValue('max_documents');
-        if ($maxDocuments === '-1') {
-            return true; // Unlimited
-        }
-        return $this->documentosImportantes()->count() < $maxDocuments;
-    }
-
-    public function canAddTrustedContact(): bool
-    {
-        $maxContacts = $this->getPlanFeatureValue('max_trusted_contacts');
-        if ($maxContacts === '-1') {
-            return true; // Unlimited
-        }
-        return $this->contactosConfianza()->count() < $maxContacts;
-    }
-
     public function canRecordVideo(): bool
     {
         return $this->getPlanFeatureValue('video_recording') === 'true';
